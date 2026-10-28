@@ -182,16 +182,19 @@
 
       <!-- OPKG TAB -->
       <div id="tab-opkg" class="tab-content active">
-        <p style="margin-bottom: 0.5rem; color: var(--text-muted);">Add custom feed to your router and install packages:</p>
+        <p style="margin-bottom: 0.5rem; color: var(--text-muted);">Add custom feed and signing key to your router:</p>
         <div class="code-block">
           <button class="copy-btn" onclick="copyCode('opkg-cmd')">Copy</button>
-          <pre id="opkg-cmd"># Add repository feed (ARM64 Cortex-A53)
+          <pre id="opkg-cmd"># 1. (Optional) Trust repository usign signing key
+wget -O /etc/opkg/keys/5bab0ffe1aafaf8f https://openwrt.mrvokintos.ru/keys/5bab0ffe1aafaf8f
+
+# 2. Add repository feed (ARM64 Cortex-A53)
 echo "src/gz mrvoki_repo https://openwrt.mrvokintos.ru/packages/aarch64_cortex-a53" >> /etc/opkg/customfeeds.conf
 
-# Update package lists
+# 3. Update package lists
 opkg update
 
-# Install singbox web interface and core (choose official or extended)
+# 4. Install sing-box and web interface
 opkg install luci-app-singbox-ui sing-box
 # OR for extended core:
 # opkg install luci-app-singbox-ui sing-box-extended</pre>
@@ -200,21 +203,38 @@ opkg install luci-app-singbox-ui sing-box
 
       <!-- APK TAB -->
       <div id="tab-apk" class="tab-content">
-        <p style="margin-bottom: 0.5rem; color: var(--text-muted);">Add repository file and install packages:</p>
+        <p style="margin-bottom: 0.5rem; color: var(--text-muted);">Trust repository signing key and install packages:</p>
         <div class="code-block">
           <button class="copy-btn" onclick="copyCode('apk-cmd')">Copy</button>
-          <pre id="apk-cmd"># Add repository feed (ARM64 Cortex-A53)
+          <pre id="apk-cmd"># 1. Trust repository RSA public key
+wget -O /etc/apk/keys/openwrt.rsa.pub https://openwrt.mrvokintos.ru/keys/openwrt.rsa.pub
+
+# 2. Add repository feed (ARM64 Cortex-A53)
 echo "https://openwrt.mrvokintos.ru/packages/aarch64_cortex-a53" >> /etc/apk/repositories.d/mrvoki.list
 
-# Update package index
+# 3. Update package index
 apk update
 
-# Install singbox web interface and core
-apk add --allow-untrusted luci-app-singbox-ui sing-box
+# 4. Install packages (verified and trusted!)
+apk add luci-app-singbox-ui sing-box
 # OR for extended core:
-# apk add --allow-untrusted luci-app-singbox-ui sing-box-extended</pre>
+# apk add luci-app-singbox-ui sing-box-extended</pre>
         </div>
       </div>
+    </div>
+
+    <div class="card">
+      <h2>Repository Signing Keys</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1rem;">All packages and repository indexes are cryptographically signed to guarantee authenticity and prevent tampering.</p>
+      <ul>
+        <li style="margin-bottom: 0.5rem;">
+          <strong>APK Public Key:</strong> <a href="keys/openwrt.rsa.pub">openwrt.rsa.pub</a> (for <code>/etc/apk/keys/</code>)
+        </li>
+        <li>
+          <strong>OPKG usign Public Key:</strong> <a href="keys/5bab0ffe1aafaf8f">5bab0ffe1aafaf8f</a> (for <code>/etc/opkg/keys/</code>)
+        </li>
+      </ul>
+    </div>
     </div>
 
     <div class="card">

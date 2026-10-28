@@ -14,16 +14,17 @@
 
 ### 1. OpenWrt 21.02 / 22.03 / 23.05 (`opkg`)
 
-Добавьте репозиторий в `/etc/opkg/customfeeds.conf`:
-
 ```bash
-# Добавление репозитория для ARM64 Cortex-A53 (содержит sing-box, sing-box-extended и luci-app-singbox-ui)
+# 1. (Опционально) Импорт ключа usign для проверки подписи
+wget -O /etc/opkg/keys/5bab0ffe1aafaf8f https://openwrt.mrvokintos.ru/keys/5bab0ffe1aafaf8f
+
+# 2. Добавление репозитория для ARM64 Cortex-A53 (содержит sing-box, sing-box-extended и luci-app-singbox-ui)
 echo "src/gz mrvoki_repo https://openwrt.mrvokintos.ru/packages/aarch64_cortex-a53" >> /etc/opkg/customfeeds.conf
 
-# Обновление списка пакетов
+# 3. Обновление списка пакетов
 opkg update
 
-# Установка веб-интерфейса и ядра sing-box
+# 4. Установка веб-интерфейса и ядра sing-box
 opkg install luci-app-singbox-ui sing-box
 
 # (Опционально) Для установки версии sing-box-extended вместо официальной:
@@ -41,20 +42,21 @@ opkg install luci-app-singbox-ui
 
 ### 2. OpenWrt 24.10+ (`apk`)
 
-Добавьте репозиторий в `/etc/apk/repositories.d/mrvoki.list`:
-
 ```bash
-# Добавление репозитория для ARM64 Cortex-A53
+# 1. Доверие публичному RSA-ключу репозитория
+wget -O /etc/apk/keys/openwrt.rsa.pub https://openwrt.mrvokintos.ru/keys/openwrt.rsa.pub
+
+# 2. Добавление репозитория для ARM64 Cortex-A53
 echo "https://openwrt.mrvokintos.ru/packages/aarch64_cortex-a53" >> /etc/apk/repositories.d/mrvoki.list
 
-# Обновление индексов
+# 3. Обновление индексов
 apk update
 
-# Установка веб-интерфейса и ядра sing-box
-apk add --allow-untrusted luci-app-singbox-ui sing-box
+# 4. Установка веб-интерфейса и ядра sing-box (проверено цифровой подписью!)
+apk add luci-app-singbox-ui sing-box
 
 # (Опционально) Для версии sing-box-extended:
-# apk add --allow-untrusted luci-app-singbox-ui sing-box-extended
+# apk add luci-app-singbox-ui sing-box-extended
 ```
 
 ---

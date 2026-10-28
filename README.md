@@ -14,16 +14,17 @@ Web Dashboard: [https://openwrt.mrvokintos.ru/](https://openwrt.mrvokintos.ru/)
 
 ### 1. OpenWrt 21.02 / 22.03 / 23.05 (`opkg`)
 
-Add the custom feed to `/etc/opkg/customfeeds.conf`:
-
 ```bash
-# Add ARM64 Cortex-A53 feed (contains sing-box, sing-box-extended, and luci-app-singbox-ui)
+# 1. (Optional) Import repository usign signing key
+wget -O /etc/opkg/keys/5bab0ffe1aafaf8f https://openwrt.mrvokintos.ru/keys/5bab0ffe1aafaf8f
+
+# 2. Add ARM64 Cortex-A53 feed (contains sing-box, sing-box-extended, and luci-app-singbox-ui)
 echo "src/gz mrvoki_repo https://openwrt.mrvokintos.ru/packages/aarch64_cortex-a53" >> /etc/opkg/customfeeds.conf
 
-# Update package lists
+# 3. Update package lists
 opkg update
 
-# Install sing-box core and LuCI Web GUI
+# 4. Install sing-box core and LuCI Web GUI
 opkg install luci-app-singbox-ui sing-box
 
 # (Optional) For sing-box-extended instead of official core:
@@ -41,20 +42,21 @@ opkg install luci-app-singbox-ui
 
 ### 2. OpenWrt 24.10+ (`apk`)
 
-Add the repository URL to `/etc/apk/repositories.d/mrvoki.list`:
-
 ```bash
-# Add ARM64 Cortex-A53 repository
+# 1. Trust repository RSA public key
+wget -O /etc/apk/keys/openwrt.rsa.pub https://openwrt.mrvokintos.ru/keys/openwrt.rsa.pub
+
+# 2. Add ARM64 Cortex-A53 repository
 echo "https://openwrt.mrvokintos.ru/packages/aarch64_cortex-a53" >> /etc/apk/repositories.d/mrvoki.list
 
-# Update repository indexes
+# 3. Update repository indexes
 apk update
 
-# Install sing-box core and LuCI Web GUI
-apk add --allow-untrusted luci-app-singbox-ui sing-box
+# 4. Install sing-box core and LuCI Web GUI (verified and trusted!)
+apk add luci-app-singbox-ui sing-box
 
 # (Optional) For sing-box-extended instead of official core:
-# apk add --allow-untrusted luci-app-singbox-ui sing-box-extended
+# apk add luci-app-singbox-ui sing-box-extended
 ```
 
 ---

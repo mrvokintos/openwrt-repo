@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Sync OpenWrt packages from upstream GitHub releases (sing-box-clean and luci-app-singbox-ui),
-organize them into package directories, and build opkg and apk repository indexes.
+organize them into package directories, sign packages and indexes, and build repository indexes.
 """
 
 import gzip
@@ -9,16 +9,19 @@ import hashlib
 import io
 import json
 import os
-import re
+import shutil
 import subprocess
 import sys
 import tarfile
+import tempfile
 import urllib.request
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PACKAGES_DIR = os.path.join(REPO_ROOT, "packages")
 ARCH_A53_DIR = os.path.join(PACKAGES_DIR, "aarch64_cortex-a53")
 ARCH_ALL_DIR = os.path.join(PACKAGES_DIR, "all")
+KEYS_DIR = os.path.join(REPO_ROOT, "keys")
+USIGN_BIN = os.path.join(REPO_ROOT, "scripts", "usign")
 
 GH_TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 
@@ -43,9 +46,6 @@ def download_file(url, dest_path):
 
 
 def extract_ipk_metadata(ipk_path):
-    """
-    Extracts control dictionary from .ipk file.
-    """
     with tarfile.open(ipk_path, "r:*") as outer_tar:
         control_tar_member = None
         for member in outer_tar.getmembers():
@@ -76,15 +76,8 @@ def extract_ipk_metadata(ipk_path):
 
 
 def find_latest_releases():
-    """
-    Finds:
-    1. Official sing-box release from mrvokintos/sing-box-clean
-    2. Extended sing-box release from mrvokintos/sing-box-clean
-    3. luci-app-singbox-ui release from mrvokintos/luci-app-singbox-ui
-    """
     targets = {}
 
-    # 1. sing-box-clean releases
     print("Fetching releases for mrvokintos/sing-box-clean...")
     singbox_releases = fetch_json("https://api.github.com/repos/mrvokintos/sing-box-clean/releases")
 
@@ -107,7 +100,6 @@ def find_latest_releases():
     if extended_rel:
         targets["sing-box-extended"] = extended_rel
 
-    # 2. luci-app-singbox-ui releases
     print("Fetching releases for mrvokintos/luci-app-singbox-ui...")
     ui_releases = fetch_json("https://api.github.com/repos/mrvokintos/luci-app-singbox-ui/releases")
     if ui_releases:
@@ -116,24 +108,113 @@ def find_latest_releases():
     return targets
 
 
-def build_ipk_index(target_dir):
+def resolve_keys():
+    """
+    Locates or prepares signing keys:
+    1. APK RSA key: from env APK_SIGNING_KEY or ~/.config/openwrt-repo/openwrt.rsa
+    2. OPKG usign key: from env USIGN_SECRET_KEY or ~/.config/openwrt-repo/openwrt.sec
+    """
+    apk_key_file = None
+    usign_key_file = None
+    cleanups = []
+
+    # APK RSA Key
+    apk_env = os.environ.get("APK_SIGNING_KEY")
+    if apk_env:
+        t = tempfile.NamedTemporaryFile(mode="w", delete=False, prefix="openwrt_", suffix=".rsa")
+        t.write(apk_env.strip() + "\n")
+        t.close()
+        os.chmod(t.name, 0o600)
+        apk_key_file = t.name
+        cleanups.append(t.name)
+    else:
+        local_rsa = os.path.expanduser("~/.config/openwrt-repo/openwrt.rsa")
+        if os.path.isfile(local_rsa):
+            apk_key_file = local_rsa
+
+    # usign Secret Key
+    usign_env = os.environ.get("USIGN_SECRET_KEY")
+    if usign_env:
+        t = tempfile.NamedTemporaryFile(mode="w", delete=False, prefix="openwrt_", suffix=".sec")
+        t.write(usign_env.strip() + "\n")
+        t.close()
+        os.chmod(t.name, 0o600)
+        usign_key_file = t.name
+        cleanups.append(t.name)
+    else:
+        local_sec = os.path.expanduser("~/.config/openwrt-repo/openwrt.sec")
+        if os.path.isfile(local_sec):
+            usign_key_file = local_sec
+
+    return apk_key_file, usign_key_file, cleanups
+
+
+def build_ipk_index(target_dir, usign_key=None):
     script_path = os.path.join(REPO_ROOT, "scripts", "build-ipk-index.py")
     subprocess.run([sys.executable, script_path, target_dir], check=True)
 
+    packages_path = os.path.join(target_dir, "Packages")
+    sig_path = os.path.join(target_dir, "Packages.sig")
 
-def build_apk_index(target_dir):
+    if usign_key and os.path.isfile(USIGN_BIN):
+        print(f"Signing {packages_path} with usign...")
+        cmd = [USIGN_BIN, "-S", "-m", packages_path, "-s", usign_key, "-x", sig_path]
+        res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if res.returncode == 0:
+            print(f"Successfully created signature: {sig_path}")
+        else:
+            print(f"Warning: usign failed: {res.stderr}", file=sys.stderr)
+    elif not usign_key:
+        print("Notice: No usign secret key provided; skipping Packages.sig generation.")
+
+
+def build_apk_index(target_dir, apk_key=None):
     apk_files = [f for f in os.listdir(target_dir) if f.endswith(".apk")]
     if not apk_files:
         return
 
     out_file = os.path.join(target_dir, "APKINDEX.tar.gz")
-    print(f"Building apk index for {target_dir} ({len(apk_files)} APKs)...")
+    print(f"Building APK index for {target_dir} ({len(apk_files)} APKs)...")
 
-    # Try docker / podman / apk locally
-    cmd = None
-    if subprocess.run(["which", "apk"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0:
-        cmd = ["apk", "mkndx", "--allow-untrusted", "-o", out_file] + [os.path.join(target_dir, f) for f in apk_files]
-    elif subprocess.run(["which", "docker"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0:
+    # If APK RSA key is present, sign both the packages and the index!
+    if apk_key:
+        print(f"Signing APK packages and index with {os.path.basename(apk_key)}...")
+        key_dir = os.path.dirname(os.path.abspath(apk_key))
+        key_name = os.path.basename(apk_key)
+
+        # 1. Sign each .apk package
+        sign_pkgs_cmd = [
+            "docker", "run", "--rm",
+            "-v", f"{target_dir}:/work",
+            "-v", f"{key_dir}:/keys:ro",
+            "-w", "/work",
+            "alpine:edge",
+            "sh", "-c",
+            f"for f in *.apk; do apk adbsign --allow-untrusted --reset-signatures --sign-key /keys/{key_name} \"$f\"; done"
+        ]
+        res = subprocess.run(sign_pkgs_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if res.returncode != 0:
+            print(f"Warning: apk adbsign failed: {res.stderr}", file=sys.stderr)
+        else:
+            print(f"Successfully signed {len(apk_files)} APK package(s).")
+
+        # 2. Build signed APKINDEX.tar.gz
+        mkndx_cmd = [
+            "docker", "run", "--rm",
+            "-v", f"{target_dir}:/work",
+            "-v", f"{key_dir}:/keys:ro",
+            "-w", "/work",
+            "alpine:edge",
+            "sh", "-c",
+            f"apk mkndx --allow-untrusted --sign-key /keys/{key_name} -o APKINDEX.tar.gz " + " ".join(apk_files)
+        ]
+        res = subprocess.run(mkndx_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if res.returncode == 0:
+            print(f"Successfully generated signed {out_file}")
+        else:
+            print(f"Warning: apk mkndx failed: {res.stderr}", file=sys.stderr)
+    else:
+        print("Notice: No APK signing key provided; building unsigned APKINDEX.")
         cmd = [
             "docker", "run", "--rm",
             "-v", f"{target_dir}:/work",
@@ -141,15 +222,11 @@ def build_apk_index(target_dir):
             "alpine:edge",
             "apk", "mkndx", "--allow-untrusted", "-o", "APKINDEX.tar.gz"
         ] + apk_files
-
-    if cmd:
         res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         if res.returncode == 0:
-            print(f"Successfully generated {out_file}")
+            print(f"Successfully generated unsigned {out_file}")
         else:
             print(f"Warning: apk mkndx failed: {res.stderr}", file=sys.stderr)
-    else:
-        print("Warning: Neither 'apk' nor 'docker' available to generate APKINDEX.tar.gz", file=sys.stderr)
 
 
 def generate_sha256sums(target_dir):
@@ -171,102 +248,101 @@ def generate_sha256sums(target_dir):
 def sync_all():
     os.makedirs(ARCH_A53_DIR, exist_ok=True)
     os.makedirs(ARCH_ALL_DIR, exist_ok=True)
+    os.makedirs(KEYS_DIR, exist_ok=True)
 
-    releases = find_latest_releases()
-    tmp_dir = os.path.join(REPO_ROOT, ".tmp_download")
-    os.makedirs(tmp_dir, exist_ok=True)
+    apk_key, usign_key, cleanups = resolve_keys()
 
-    # Track packages to copy to a53 and all
-    for rel_type, rel_info in releases.items():
-        tag = rel_info["tag_name"]
-        print(f"\nProcessing {rel_type} ({tag})...")
-        assets = rel_info.get("assets", [])
+    try:
+        releases = find_latest_releases()
+        tmp_dir = os.path.join(REPO_ROOT, ".tmp_download")
+        os.makedirs(tmp_dir, exist_ok=True)
 
-        for asset in assets:
-            name = asset["name"]
-            url = asset["browser_download_url"]
+        for rel_type, rel_info in releases.items():
+            tag = rel_info["tag_name"]
+            print(f"\nProcessing {rel_type} ({tag})...")
+            assets = rel_info.get("assets", [])
 
-            if not (name.endswith(".ipk") or name.endswith(".apk")):
-                continue
+            for asset in assets:
+                name = asset["name"]
+                url = asset["browser_download_url"]
 
-            local_tmp = os.path.join(tmp_dir, f"{tag}_{name}")
-            download_file(url, local_tmp)
+                if not (name.endswith(".ipk") or name.endswith(".apk")):
+                    continue
 
-            if name.endswith(".ipk"):
-                meta, _ = extract_ipk_metadata(local_tmp)
-                pkg_name = meta.get("Package", name[:-4])
-                pkg_ver = meta.get("Version", tag.lstrip("v"))
-                pkg_arch = meta.get("Architecture", "all")
-                canonical_name = f"{pkg_name}_{pkg_ver}_{pkg_arch}.ipk"
+                local_tmp = os.path.join(tmp_dir, f"{tag}_{name}")
+                download_file(url, local_tmp)
 
-                if pkg_arch == "all":
-                    # Place in packages/all
-                    dest = os.path.join(ARCH_ALL_DIR, canonical_name)
-                    os.replace(local_tmp, dest)
-                    # Also link/copy into aarch64_cortex-a53 for convenience
-                    dest_a53 = os.path.join(ARCH_A53_DIR, canonical_name)
-                    if os.path.exists(dest_a53):
-                        os.remove(dest_a53)
-                    with open(dest, "rb") as src_f, open(dest_a53, "wb") as dst_f:
-                        dst_f.write(src_f.read())
-                    print(f"Saved {canonical_name} to both 'all' and 'aarch64_cortex-a53'")
-                else:
-                    dest = os.path.join(ARCH_A53_DIR, canonical_name)
-                    os.replace(local_tmp, dest)
-                    print(f"Saved {canonical_name} to 'aarch64_cortex-a53'")
+                if name.endswith(".ipk"):
+                    meta, _ = extract_ipk_metadata(local_tmp)
+                    pkg_name = meta.get("Package", name[:-4])
+                    pkg_ver = meta.get("Version", tag.lstrip("v"))
+                    pkg_arch = meta.get("Architecture", "all")
+                    canonical_name = f"{pkg_name}_{pkg_ver}_{pkg_arch}.ipk"
 
-            elif name.endswith(".apk"):
-                # Use tag or base name to make canonical apk name
-                base_name = name[:-4]
-                clean_ver = tag.lstrip("v")
-                canonical_name = f"{base_name}_{clean_ver}.apk"
+                    if pkg_arch == "all":
+                        dest = os.path.join(ARCH_ALL_DIR, canonical_name)
+                        os.replace(local_tmp, dest)
+                        dest_a53 = os.path.join(ARCH_A53_DIR, canonical_name)
+                        if os.path.exists(dest_a53):
+                            os.remove(dest_a53)
+                        with open(dest, "rb") as src_f, open(dest_a53, "wb") as dst_f:
+                            dst_f.write(src_f.read())
+                        print(f"Saved {canonical_name} to both 'all' and 'aarch64_cortex-a53'")
+                    else:
+                        dest = os.path.join(ARCH_A53_DIR, canonical_name)
+                        os.replace(local_tmp, dest)
+                        print(f"Saved {canonical_name} to 'aarch64_cortex-a53'")
 
-                if "luci-app-singbox-ui" in name:
-                    dest = os.path.join(ARCH_ALL_DIR, canonical_name)
-                    os.replace(local_tmp, dest)
-                    dest_a53 = os.path.join(ARCH_A53_DIR, canonical_name)
-                    if os.path.exists(dest_a53):
-                        os.remove(dest_a53)
-                    with open(dest, "rb") as src_f, open(dest_a53, "wb") as dst_f:
-                        dst_f.write(src_f.read())
-                    print(f"Saved {canonical_name} to both 'all' and 'aarch64_cortex-a53'")
-                else:
-                    dest = os.path.join(ARCH_A53_DIR, canonical_name)
-                    os.replace(local_tmp, dest)
-                    print(f"Saved {canonical_name} to 'aarch64_cortex-a53'")
+                elif name.endswith(".apk"):
+                    base_name = name[:-4]
+                    clean_ver = tag.lstrip("v")
+                    canonical_name = f"{base_name}_{clean_ver}.apk"
 
-    if os.path.exists(tmp_dir):
-        import shutil
-        shutil.rmtree(tmp_dir, ignore_errors=True)
+                    if "luci-app-singbox-ui" in name:
+                        dest = os.path.join(ARCH_ALL_DIR, canonical_name)
+                        os.replace(local_tmp, dest)
+                        dest_a53 = os.path.join(ARCH_A53_DIR, canonical_name)
+                        if os.path.exists(dest_a53):
+                            os.remove(dest_a53)
+                        with open(dest, "rb") as src_f, open(dest_a53, "wb") as dst_f:
+                            dst_f.write(src_f.read())
+                        print(f"Saved {canonical_name} to both 'all' and 'aarch64_cortex-a53'")
+                    else:
+                        dest = os.path.join(ARCH_A53_DIR, canonical_name)
+                        os.replace(local_tmp, dest)
+                        print(f"Saved {canonical_name} to 'aarch64_cortex-a53'")
 
-    print("\n=== Building Repository Indexes ===")
-    for d in [ARCH_ALL_DIR, ARCH_A53_DIR]:
-        build_ipk_index(d)
-        build_apk_index(d)
-        generate_sha256sums(d)
+        if os.path.exists(tmp_dir):
+            shutil.rmtree(tmp_dir, ignore_errors=True)
 
-    # Create convenience symlinks:
-    # 1. packages/aarch64 -> aarch64_cortex-a53
-    # 2. root-level aarch64_cortex-a53 -> packages/aarch64_cortex-a53
-    # 3. root-level all -> packages/all
-    def ensure_symlink(src, link_path):
-        if os.path.islink(link_path) or os.path.exists(link_path):
+        print("\n=== Building and Signing Repository Indexes ===")
+        for d in [ARCH_ALL_DIR, ARCH_A53_DIR]:
+            build_ipk_index(d, usign_key)
+            build_apk_index(d, apk_key)
+            generate_sha256sums(d)
+
+        # Convenience symlinks
+        def ensure_symlink(src, link_path):
+            if os.path.islink(link_path) or os.path.exists(link_path):
+                try:
+                    os.remove(link_path)
+                except IsADirectoryError:
+                    pass
             try:
-                os.remove(link_path)
-            except IsADirectoryError:
-                pass
-        try:
-            os.symlink(src, link_path)
-        except Exception as e:
-            print(f"Notice: symlink {link_path} -> {src}: {e}")
+                os.symlink(src, link_path)
+            except Exception as e:
+                print(f"Notice: symlink {link_path} -> {src}: {e}")
 
-    ensure_symlink("aarch64_cortex-a53", os.path.join(PACKAGES_DIR, "aarch64"))
-    ensure_symlink("packages/aarch64_cortex-a53", os.path.join(REPO_ROOT, "aarch64_cortex-a53"))
-    ensure_symlink("packages/all", os.path.join(REPO_ROOT, "all"))
+        ensure_symlink("aarch64_cortex-a53", os.path.join(PACKAGES_DIR, "aarch64"))
+        ensure_symlink("packages/aarch64_cortex-a53", os.path.join(REPO_ROOT, "aarch64_cortex-a53"))
+        ensure_symlink("packages/all", os.path.join(REPO_ROOT, "all"))
 
-    print("\nSync and index build finished successfully!")
+        print("\nSync, signing, and index build finished successfully!")
+    finally:
+        for f in cleanups:
+            if os.path.isfile(f):
+                os.remove(f)
 
 
 if __name__ == "__main__":
     sync_all()
-
