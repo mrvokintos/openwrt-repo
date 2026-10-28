@@ -166,8 +166,8 @@
       <h1>OpenWrt Package Repository</h1>
       <p class="lead">Automated package repository for <strong>sing-box</strong>, <strong>sing-box-extended</strong>, and <strong>luci-app-singbox-ui</strong>.</p>
       <div class="badges">
-        <span class="badge">OpenWrt 21.02 / 22.03 / 23.05 (opkg)</span>
-        <span class="badge">OpenWrt 24.10+ (apk)</span>
+        <span class="badge">OpenWrt &le; 24.10 (opkg)</span>
+        <span class="badge">OpenWrt 25.12+ (apk)</span>
         <span class="badge">ARM64 Cortex-A53</span>
         <span class="badge">Architecture: All</span>
       </div>
@@ -176,8 +176,8 @@
     <div class="card">
       <h2>Quick Setup on Router</h2>
       <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('opkg')">opkg (OpenWrt &le; 23.05)</button>
-        <button class="tab-btn" onclick="switchTab('apk')">apk (OpenWrt 24.10+)</button>
+        <button class="tab-btn active" onclick="switchTab('opkg')">opkg (OpenWrt &le; 24.10)</button>
+        <button class="tab-btn" onclick="switchTab('apk')">apk (OpenWrt 25.12+)</button>
       </div>
 
       <!-- OPKG TAB -->
@@ -203,6 +203,9 @@ opkg install luci-app-singbox-ui sing-box
 
       <!-- APK TAB -->
       <div id="tab-apk" class="tab-content">
+        <p style="margin-bottom: 0.75rem; color: var(--accent); font-size: 0.9rem;">
+          Note: APK (Alpine Package Keeper) was developed by Alpine Linux and is used in OpenWrt 25.12 and newer, replacing opkg. It is not related to Android APK.
+        </p>
         <p style="margin-bottom: 0.5rem; color: var(--text-muted);">Trust repository signing key and install packages:</p>
         <div class="code-block">
           <button class="copy-btn" onclick="copyCode('apk-cmd')">Copy</button>

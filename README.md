@@ -12,7 +12,7 @@ Web Dashboard: [https://openwrt.mrvokintos.ru/](https://openwrt.mrvokintos.ru/)
 
 ## Quick Setup
 
-### 1. OpenWrt 21.02 / 22.03 / 23.05 (`opkg`)
+### 1. OpenWrt 21.02 / 22.03 / 23.05 / 24.10 (`opkg`)
 
 ```bash
 # 1. (Optional) Import repository usign signing key
@@ -40,7 +40,10 @@ opkg install luci-app-singbox-ui
 
 ---
 
-### 2. OpenWrt 24.10+ (`apk`)
+### 2. OpenWrt 25.12+ (`apk`)
+
+> [!NOTE]
+> APK (*Alpine Package Keeper*) was developed by [Alpine Linux](https://alpinelinux.org/) and is the package manager used in OpenWrt 25.12 and newer. This replaced the former package manager [opkg](https://openwrt.org/docs/guide-user/additional-software/opkg) which ended upstream development. Note that `apk` has nothing to do with Android or other systems that may use the same acronym.
 
 ```bash
 # 1. Trust repository RSA public key

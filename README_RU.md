@@ -12,7 +12,7 @@
 
 ## Быстрая настройка
 
-### 1. OpenWrt 21.02 / 22.03 / 23.05 (`opkg`)
+### 1. OpenWrt 21.02 / 22.03 / 23.05 / 24.10 (`opkg`)
 
 ```bash
 # 1. (Опционально) Импорт ключа usign для проверки подписи
@@ -40,7 +40,10 @@ opkg install luci-app-singbox-ui
 
 ---
 
-### 2. OpenWrt 24.10+ (`apk`)
+### 2. OpenWrt 25.12+ (`apk`)
+
+> [!NOTE]
+> APK (*Alpine Package Keeper*) был разработан проектом [Alpine Linux](https://alpinelinux.org/) и является пакетным менеджером в OpenWrt 25.12 и новее. Он пришел на смену [opkg](https://openwrt.org/docs/guide-user/additional-software/opkg), активная разработка которого завершилась. Обратите внимание: формат `apk` в OpenWrt не имеет никакого отношения к пакетам Android или другим системам с похожей аббревиатурой.
 
 ```bash
 # 1. Доверие публичному RSA-ключу репозитория
