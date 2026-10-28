@@ -10,6 +10,17 @@
 
 ---
 
+## Каналы обновлений репозитория
+
+| Канал | Описание | URL фида aarch64_cortex-a53 | URL фида all |
+| :--- | :--- | :--- | :--- |
+| **Stable** *(по умолчанию)* | Официальные стабильные релизы | `https://openwrt.mrvokintos.ru/packages/aarch64_cortex-a53` | `https://openwrt.mrvokintos.ru/packages/all` |
+| **Beta** | Релизы-кандидаты и бета-версии (RC / Beta) | `https://openwrt.mrvokintos.ru/packages/beta/aarch64_cortex-a53` | `https://openwrt.mrvokintos.ru/packages/beta/all` |
+| **Git** | Автоматические сборки из ветки `main` | `https://openwrt.mrvokintos.ru/packages/git/aarch64_cortex-a53` | `https://openwrt.mrvokintos.ru/packages/git/all` |
+| **Dev** | Экспериментальные сборки из ветки `dev` | `https://openwrt.mrvokintos.ru/packages/dev/aarch64_cortex-a53` | `https://openwrt.mrvokintos.ru/packages/dev/all` |
+
+---
+
 ## Быстрая настройка
 
 ### 1. OpenWrt 21.02 / 22.03 / 23.05 / 24.10 (`opkg`)

@@ -5,7 +5,7 @@ on:
     - cron: "0 5 * * *" # Runs daily at 05:00 UTC (after sing-box daily build)
   workflow_dispatch:
   repository_dispatch:
-    types: [sync-packages]
+    types: [sync-packages, ui-updated, core-updated]
 
 concurrency:
   group: sync-openwrt-repo
@@ -43,7 +43,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add packages/ aarch64_cortex-a53 all keys/
+          git add packages/ aarch64_cortex-a53 all beta git dev keys/
           if git diff --staged --quiet; then
             echo "No package or index changes to commit."
           else

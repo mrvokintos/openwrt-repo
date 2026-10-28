@@ -78,19 +78,20 @@
       display: flex;
       gap: 0.5rem;
       margin-bottom: 1rem;
+      flex-wrap: wrap;
     }
-    .tab-btn {
+    .tab-btn, .channel-btn {
       background: var(--code-bg);
       border: 1px solid var(--border);
       color: var(--text-muted);
-      padding: 0.5rem 1rem;
+      padding: 0.4rem 0.85rem;
       border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       transition: all 0.2s;
     }
-    .tab-btn.active {
+    .tab-btn.active, .channel-btn.active {
       background: var(--accent);
       color: #000;
       border-color: var(--accent);
@@ -164,7 +165,7 @@
   <div class="container">
     <header>
       <h1>OpenWrt Package Repository</h1>
-      <p class="lead">Automated package repository for <strong>sing-box</strong>, <strong>sing-box-extended</strong>, and <strong>luci-app-singbox-ui</strong>.</p>
+      <p class="lead">Automated repository for <strong>sing-box</strong>, <strong>sing-box-extended</strong>, and <strong>luci-app-singbox-ui</strong>.</p>
       <div class="badges">
         <span class="badge">OpenWrt &le; 24.10 (opkg)</span>
         <span class="badge">OpenWrt 25.12+ (apk)</span>
@@ -175,6 +176,21 @@
 
     <div class="card">
       <h2>Quick Setup on Router</h2>
+
+      <!-- Channel Selection -->
+      <div style="margin-bottom: 1.25rem;">
+        <span style="font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 0.4rem; font-weight: bold;">
+          Select Channel:
+        </span>
+        <div class="tabs" style="margin-bottom: 0.5rem;">
+          <button class="channel-btn active" onclick="setChannel('')">Stable (Official Release)</button>
+          <button class="channel-btn" onclick="setChannel('beta')">Beta (RC / Pre-release)</button>
+          <button class="channel-btn" onclick="setChannel('git')">Git (main branch artifacts)</button>
+          <button class="channel-btn" onclick="setChannel('dev')">Dev (dev branch artifacts)</button>
+        </div>
+      </div>
+
+      <!-- Package Manager Tabs -->
       <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('opkg')">opkg (OpenWrt &le; 24.10)</button>
         <button class="tab-btn" onclick="switchTab('apk')">apk (OpenWrt 25.12+)</button>
@@ -185,19 +201,7 @@
         <p style="margin-bottom: 0.5rem; color: var(--text-muted);">Add custom feed and signing key to your router:</p>
         <div class="code-block">
           <button class="copy-btn" onclick="copyCode('opkg-cmd')">Copy</button>
-          <pre id="opkg-cmd"># 1. (Optional) Trust repository usign signing key
-wget -O /etc/opkg/keys/5bab0ffe1aafaf8f https://openwrt.mrvokintos.ru/keys/5bab0ffe1aafaf8f
-
-# 2. Add repository feed (ARM64 Cortex-A53)
-echo "src/gz mrvoki_repo https://openwrt.mrvokintos.ru/packages/aarch64_cortex-a53" >> /etc/opkg/customfeeds.conf
-
-# 3. Update package lists
-opkg update
-
-# 4. Install sing-box and web interface
-opkg install luci-app-singbox-ui sing-box
-# OR for extended core:
-# opkg install luci-app-singbox-ui sing-box-extended</pre>
+          <pre id="opkg-cmd"></pre>
         </div>
       </div>
 
@@ -209,19 +213,7 @@ opkg install luci-app-singbox-ui sing-box
         <p style="margin-bottom: 0.5rem; color: var(--text-muted);">Trust repository signing key and install packages:</p>
         <div class="code-block">
           <button class="copy-btn" onclick="copyCode('apk-cmd')">Copy</button>
-          <pre id="apk-cmd"># 1. Trust repository RSA public key
-wget -O /etc/apk/keys/openwrt.rsa.pub https://openwrt.mrvokintos.ru/keys/openwrt.rsa.pub
-
-# 2. Add repository feed (ARM64 Cortex-A53)
-echo "https://openwrt.mrvokintos.ru/packages/aarch64_cortex-a53" >> /etc/apk/repositories.d/mrvoki.list
-
-# 3. Update package index
-apk update
-
-# 4. Install packages (verified and trusted!)
-apk add luci-app-singbox-ui sing-box
-# OR for extended core:
-# apk add luci-app-singbox-ui sing-box-extended</pre>
+          <pre id="apk-cmd"></pre>
         </div>
       </div>
     </div>
@@ -238,23 +230,22 @@ apk add luci-app-singbox-ui sing-box
         </li>
       </ul>
     </div>
-    </div>
 
     <div class="card">
-      <h2>Available Packages</h2>
+      <h2>Available Packages & Channels</h2>
       <table>
         <thead>
           <tr>
             <th>Package</th>
-            <th>Type</th>
+            <th>Channel</th>
             <th>Architecture</th>
-            <th>Repository Direct Links</th>
+            <th>Indexes</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td><strong>sing-box</strong></td>
-            <td>Official Core</td>
+            <td>Stable / All</td>
             <td><code>aarch64_cortex-a53</code></td>
             <td>
               <a href="packages/aarch64_cortex-a53/Packages">Packages</a> |
@@ -264,7 +255,7 @@ apk add luci-app-singbox-ui sing-box
           </tr>
           <tr>
             <td><strong>sing-box-extended</strong></td>
-            <td>Extended Core (REALITY, uTLS, XHTTP)</td>
+            <td>Stable / All</td>
             <td><code>aarch64_cortex-a53</code></td>
             <td>
               <a href="packages/aarch64_cortex-a53/Packages">Packages</a> |
@@ -274,12 +265,42 @@ apk add luci-app-singbox-ui sing-box
           </tr>
           <tr>
             <td><strong>luci-app-singbox-ui</strong></td>
-            <td>LuCI Web GUI</td>
+            <td>Stable</td>
             <td><code>all</code></td>
             <td>
               <a href="packages/all/Packages">Packages</a> |
               <a href="packages/all/Packages.gz">Packages.gz</a> |
               <a href="packages/all/APKINDEX.tar.gz">APKINDEX</a>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>luci-app-singbox-ui</strong></td>
+            <td>Beta (RC)</td>
+            <td><code>all</code></td>
+            <td>
+              <a href="packages/beta/all/Packages">Packages</a> |
+              <a href="packages/beta/all/Packages.gz">Packages.gz</a> |
+              <a href="packages/beta/all/APKINDEX.tar.gz">APKINDEX</a>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>luci-app-singbox-ui</strong></td>
+            <td>Git (main)</td>
+            <td><code>all</code></td>
+            <td>
+              <a href="packages/git/all/Packages">Packages</a> |
+              <a href="packages/git/all/Packages.gz">Packages.gz</a> |
+              <a href="packages/git/all/APKINDEX.tar.gz">APKINDEX</a>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>luci-app-singbox-ui</strong></td>
+            <td>Dev (dev)</td>
+            <td><code>all</code></td>
+            <td>
+              <a href="packages/dev/all/Packages">Packages</a> |
+              <a href="packages/dev/all/Packages.gz">Packages.gz</a> |
+              <a href="packages/dev/all/APKINDEX.tar.gz">APKINDEX</a>
             </td>
           </tr>
         </tbody>
@@ -304,7 +325,53 @@ apk add luci-app-singbox-ui sing-box
   </div>
 
   <script>
+    let activeChannel = '';
+    let activeTab = 'opkg';
+
+    function updateCommands() {
+      const feedPath = activeChannel ? `${activeChannel}/aarch64_cortex-a53` : `aarch64_cortex-a53`;
+      const opkgText = `# 1. (Optional) Trust repository usign signing key
+wget -O /etc/opkg/keys/5bab0ffe1aafaf8f https://openwrt.mrvokintos.ru/keys/5bab0ffe1aafaf8f
+
+# 2. Add repository feed (ARM64 Cortex-A53)
+echo "src/gz mrvoki_repo https://openwrt.mrvokintos.ru/packages/${feedPath}" >> /etc/opkg/customfeeds.conf
+
+# 3. Update package lists
+opkg update
+
+# 4. Install sing-box and web interface
+opkg install luci-app-singbox-ui sing-box
+# OR for extended core:
+# opkg install luci-app-singbox-ui sing-box-extended`;
+
+      const apkText = `# 1. Trust repository RSA public key
+wget -O /etc/apk/keys/openwrt.rsa.pub https://openwrt.mrvokintos.ru/keys/openwrt.rsa.pub
+
+# 2. Add repository feed (ARM64 Cortex-A53)
+echo "https://openwrt.mrvokintos.ru/packages/${feedPath}" >> /etc/apk/repositories.d/mrvoki.list
+
+# 3. Update package index
+apk update
+
+# 4. Install packages (verified and trusted!)
+apk add luci-app-singbox-ui sing-box
+# OR for extended core:
+# apk add luci-app-singbox-ui sing-box-extended`;
+
+      document.getElementById('opkg-cmd').innerText = opkgText;
+      document.getElementById('apk-cmd').innerText = apkText;
+    }
+
+    function setChannel(channel) {
+      activeChannel = channel;
+      document.querySelectorAll('.channel-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${channel}'`));
+      });
+      updateCommands();
+    }
+
     function switchTab(tab) {
+      activeTab = tab;
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
       if (tab === 'opkg') {
@@ -315,6 +382,7 @@ apk add luci-app-singbox-ui sing-box
         document.getElementById('tab-apk').classList.add('active');
       }
     }
+
     function copyCode(id) {
       const text = document.getElementById(id).innerText;
       navigator.clipboard.writeText(text).then(() => {
@@ -324,7 +392,9 @@ apk add luci-app-singbox-ui sing-box
         setTimeout(() => btn.innerText = orig, 1500);
       });
     }
+
+    // Initialize commands on load
+    updateCommands();
   </script>
 </body>
 </html>
-
