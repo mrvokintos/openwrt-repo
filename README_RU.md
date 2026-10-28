@@ -6,7 +6,7 @@
 
 Автоматизированный репозиторий пакетов OpenWrt для ядер **sing-box** (Official), **sing-box-extended** и веб-интерфейса **luci-app-singbox-ui** под архитектуру ARM64 Cortex-A53.
 
-Веб-страница: [https://mrvokintos.github.io/openwrt-repo/](https://mrvokintos.github.io/openwrt-repo/)
+Веб-страница: [https://openwrt.mrvokintos.ru/](https://openwrt.mrvokintos.ru/)
 
 ---
 
@@ -18,7 +18,7 @@
 
 ```bash
 # Добавление репозитория для ARM64 Cortex-A53 (содержит sing-box, sing-box-extended и luci-app-singbox-ui)
-echo "src/gz mrvoki_repo https://mrvokintos.github.io/openwrt-repo/packages/aarch64_cortex-a53" >> /etc/opkg/customfeeds.conf
+echo "src/gz mrvoki_repo https://openwrt.mrvokintos.ru/packages/aarch64_cortex-a53" >> /etc/opkg/customfeeds.conf
 
 # Обновление списка пакетов
 opkg update
@@ -32,7 +32,7 @@ opkg install luci-app-singbox-ui sing-box
 
 *Для устройств других архитектур, которым нужен только интерфейс `luci-app-singbox-ui`:*
 ```bash
-echo "src/gz mrvoki_all https://mrvokintos.github.io/openwrt-repo/packages/all" >> /etc/opkg/customfeeds.conf
+echo "src/gz mrvoki_all https://openwrt.mrvokintos.ru/packages/all" >> /etc/opkg/customfeeds.conf
 opkg update
 opkg install luci-app-singbox-ui
 ```
@@ -45,7 +45,7 @@ opkg install luci-app-singbox-ui
 
 ```bash
 # Добавление репозитория для ARM64 Cortex-A53
-echo "https://mrvokintos.github.io/openwrt-repo/packages/aarch64_cortex-a53" >> /etc/apk/repositories.d/mrvoki.list
+echo "https://openwrt.mrvokintos.ru/packages/aarch64_cortex-a53" >> /etc/apk/repositories.d/mrvoki.list
 
 # Обновление индексов
 apk update
@@ -89,3 +89,4 @@ packages/
 ## Автоматизация
 
 Репозиторий ежедневно автоматически опрашивает новые релизы проектов через GitHub Actions ([`.github/workflows/sync-packages.yml`](.github/workflows/sync-packages.yml)), пересобирает индексы `Packages.gz` и `APKINDEX.tar.gz` и обновляет сайт на GitHub Pages.
+

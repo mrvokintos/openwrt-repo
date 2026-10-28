@@ -116,3 +116,4 @@ if __name__ == "__main__":
     pkg_dir = sys.argv[1]
     out_dir = sys.argv[2] if len(sys.argv) > 2 else pkg_dir
     build_index(pkg_dir, out_dir)
+

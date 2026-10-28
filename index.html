@@ -186,7 +186,7 @@
         <div class="code-block">
           <button class="copy-btn" onclick="copyCode('opkg-cmd')">Copy</button>
           <pre id="opkg-cmd"># Add repository feed (ARM64 Cortex-A53)
-echo "src/gz mrvoki_repo https://mrvokintos.github.io/openwrt-repo/packages/aarch64_cortex-a53" >> /etc/opkg/customfeeds.conf
+echo "src/gz mrvoki_repo https://openwrt.mrvokintos.ru/packages/aarch64_cortex-a53" >> /etc/opkg/customfeeds.conf
 
 # Update package lists
 opkg update
@@ -204,7 +204,7 @@ opkg install luci-app-singbox-ui sing-box
         <div class="code-block">
           <button class="copy-btn" onclick="copyCode('apk-cmd')">Copy</button>
           <pre id="apk-cmd"># Add repository feed (ARM64 Cortex-A53)
-echo "https://mrvokintos.github.io/openwrt-repo/packages/aarch64_cortex-a53" >> /etc/apk/repositories.d/mrvoki.list
+echo "https://openwrt.mrvokintos.ru/packages/aarch64_cortex-a53" >> /etc/apk/repositories.d/mrvoki.list
 
 # Update package index
 apk update
@@ -304,3 +304,4 @@ apk add --allow-untrusted luci-app-singbox-ui sing-box
   </script>
 </body>
 </html>
+
