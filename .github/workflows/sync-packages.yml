@@ -1,0 +1,62 @@
+name: Sync and Publish OpenWrt Repo
+
+on:
+  schedule:
+    - cron: "0 5 * * *" # Runs daily at 05:00 UTC (after sing-box daily build)
+  workflow_dispatch:
+  repository_dispatch:
+    types: [sync-packages]
+
+concurrency:
+  group: sync-openwrt-repo
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  sync-and-deploy:
+    name: Sync Packages & Deploy Pages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Sync Packages & Build Indexes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          python3 scripts/sync-repo.py
+
+      - name: Commit Updated Packages
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add packages/ aarch64_cortex-a53 all
+          if git diff --staged --quiet; then
+            echo "No package or index changes to commit."
+          else
+            git commit -m "chore: sync upstream releases and update repository indexes"
+            git push origin HEAD:main
+          fi
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

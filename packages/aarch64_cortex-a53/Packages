@@ -1,0 +1,55 @@
+Package: luci-app-singbox-ui
+Version: 3.0.0-rc1-r1
+Depends: libc, luci-base
+Source: feeds/base/feeds/luci/luci-app-singbox-ui
+SourceName: luci-app-singbox-ui
+License: GPL-2.0-only
+Section: luci
+SourceDateEpoch: 1758316778
+URL: https://github.com/openwrt/luci
+Maintainer: OpenWrt LuCI community
+Architecture: all
+Installed-Size: 71680
+Filename: luci-app-singbox-ui_3.0.0-rc1-r1_all.ipk
+Size: 15019
+MD5Sum: bfe5c02a285c32264d9b2c7ec27684b5
+SHA256sum: 4455754324b1637ae060d6a97b5ec91d4ba7c0d62666c7780b7dc0174d5c5b77
+Description:  LuCI singbox-ui app
+
+Package: sing-box-extended
+Version: 1.14.3~extended~2.7.3
+License: GPL-3.0-or-later
+Vendor: none
+Architecture: aarch64_cortex-a53
+Maintainer: nekohasekai <contact-git@sekai.icu>
+Installed-Size: 55636
+Depends: ca-bundle, kmod-inet-diag, kmod-tun, firewall4, kmod-nft-queue
+Conflicts: sing-box
+Provides: sing-box
+Replaces: sing-box
+Section: net
+Priority: optional
+Homepage: https://sing-box.sagernet.org/
+Filename: sing-box-extended_1.14.3~extended~2.7.3_aarch64_cortex-a53.ipk
+Size: 20256493
+MD5Sum: 8426192f3a69f125a724dae64d64ceb0
+SHA256sum: 30075af198e4eef4b9b0f6cfd3560efe9e4eafa34cff8018fb2b340dedb542aa
+Description: The universal proxy platform (extended).
+
+Package: sing-box
+Version: 1.14.4
+License: GPL-3.0-or-later
+Vendor: none
+Architecture: aarch64_cortex-a53
+Maintainer: nekohasekai <contact-git@sekai.icu>
+Installed-Size: 47088
+Depends: ca-bundle, kmod-inet-diag, kmod-tun, firewall4, kmod-nft-queue
+Section: net
+Priority: optional
+Homepage: https://sing-box.sagernet.org/
+Filename: sing-box_1.14.4_aarch64_cortex-a53.ipk
+Size: 17886088
+MD5Sum: f33a8630277804c32e9ad227a3aa13ec
+SHA256sum: 4f9c64f4110910ed9d4523e18895b53c519a0bada8a2ce96b44afef572ba0322
+Description: The universal proxy platform.
+
