@@ -1,0 +1,18 @@
+Package: luci-app-singbox-ui
+Version: 3.0.0_rc1-git.202610201430.d1d1f4f
+Depends: libc, luci-base
+Source: feeds/base/feeds/luci/luci-app-singbox-ui
+SourceName: luci-app-singbox-ui
+License: GPL-2.0-only
+Section: luci
+SourceDateEpoch: 1758316778
+URL: https://github.com/openwrt/luci
+Maintainer: OpenWrt LuCI community
+Architecture: all
+Installed-Size: 71680
+Filename: luci-app-singbox-ui-main-d1d1f4f-20261020-1430.ipk
+Size: 15004
+MD5Sum: d3974a3d46eb27204ba1dbfbf56cd393
+SHA256sum: ad86ab0fcdcf1889150782bc98ffdedb8d73e76db5b68d3eb595b2f47b9d8821
+Description:  LuCI singbox-ui app
+
