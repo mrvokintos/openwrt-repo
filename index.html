@@ -1,400 +1,1701 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OpenWrt Package Repository — sing-box & luci-app-singbox-ui</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --border: #334155;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --accent: #38bdf8;
-      --accent-hover: #0284c7;
-      --code-bg: #090d16;
-      --success: #4ade80;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      padding: 2rem 1rem;
-    }
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    header {
-      text-align: center;
-      margin-bottom: 2.5rem;
-    }
-    h1 {
-      font-size: 2.25rem;
-      margin-bottom: 0.5rem;
-      color: #fff;
-    }
-    p.lead {
-      color: var(--text-muted);
-      font-size: 1.15rem;
-    }
-    .badges {
-      margin-top: 1rem;
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    .badge {
-      display: inline-block;
-      padding: 0.25rem 0.65rem;
-      border-radius: 9999px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      background: var(--border);
-      color: var(--accent);
-    }
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-    }
-    h2 {
-      font-size: 1.4rem;
-      margin-bottom: 1rem;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .tabs {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-    }
-    .tab-btn, .channel-btn {
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 0.4rem 0.85rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.9rem;
-      transition: all 0.2s;
-    }
-    .tab-btn.active, .channel-btn.active {
-      background: var(--accent);
-      color: #000;
-      border-color: var(--accent);
-    }
-    .tab-content {
-      display: none;
-    }
-    .tab-content.active {
-      display: block;
-    }
-    .code-block {
-      position: relative;
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1rem;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 0.9rem;
-      overflow-x: auto;
-      margin-bottom: 1rem;
-    }
-    .copy-btn {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.5rem;
-      background: var(--border);
-      border: none;
-      color: var(--text);
-      padding: 0.35rem 0.65rem;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .copy-btn:hover {
-      background: var(--accent);
-      color: #000;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-    th, td {
-      text-align: left;
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid var(--border);
-    }
-    th {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    footer {
-      text-align: center;
-      margin-top: 3rem;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <header>
-      <h1>OpenWrt Package Repository</h1>
-      <p class="lead">Automated repository for <strong>sing-box</strong>, <strong>sing-box-extended</strong>, and <strong>luci-app-singbox-ui</strong>.</p>
-      <div class="badges">
-        <span class="badge">OpenWrt &le; 24.10 (opkg)</span>
-        <span class="badge">OpenWrt 25.12+ (apk)</span>
-        <span class="badge">ARM64 Cortex-A53</span>
-        <span class="badge">Architecture: All</span>
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#e2e2e2" id="theme-meta" />
+    <meta name="darkreader-lock" />
+    <script>
+      (function () {
+        try {
+          var theme = localStorage.getItem("theme");
+          if (!theme) {
+            theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          }
+          document.documentElement.dataset.theme = theme;
+          var meta = document.getElementById("theme-meta");
+          if (meta) meta.content = theme === "dark" ? "#0d0d0d" : "#e2e2e2";
+          var lang = localStorage.getItem("language");
+          if (lang) document.documentElement.lang = lang;
+        } catch (e) {}
+      })();
+    </script>
+    <meta
+      name="description"
+      content="OpenWrt Package Repository — официальные и расширенные сборки sing-box и интерфейса luci-app-singbox-ui для OpenWrt."
+    />
+    <title>OpenWrt Package Repository — mrvokintos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL@20..48,400,0..1&amp;family=Space+Grotesk:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Theme tokens and typography exactly from mrvokintos.github.io */
+      :root {
+        --paper: #e2e2e2;
+        --paper-2: #f1f1f1;
+        --ink: #1b1b1b;
+        --white: #f1f1f1;
+        --light-widget: #f1f1f1;
+        --light-raised: #ffffff;
+        --light-on: #1b1b1b;
+        --nothing-widget: #1b1b1b;
+        --nothing-raised: #303030;
+        --nothing-on: #f1f1f1;
+        --widget-surface: var(--light-widget);
+        --widget-raised: var(--light-raised);
+        --widget-on: var(--light-on);
+        --muted: #b9b9b9;
+        --line: rgba(21, 21, 21, 0.22);
+        --ease: cubic-bezier(0.2, 0, 0, 1);
+        --expressive: cubic-bezier(0.16, 1, 0.3, 1);
+        --theme-speed: 0.4s;
+        --theme-ease: linear;
+        --accent: #d71921;
+
+        /* Command terminal black container */
+        --terminal-bg: #000000;
+        --terminal-text: #f1f1f1;
+        --terminal-border: rgba(255, 255, 255, 0.12);
+        --terminal-comment: #777777;
+        --terminal-cmd: #ffffff;
+        --terminal-arg: #cccccc;
+      }
+
+      @font-face {
+        font-family: "Nothing Font";
+        src: url("data:font/woff2;base64,d09GMk9UVE8AABeMAAkAAAAB2agAABdFAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAADYbuMQZgAI5EATYCJAOLAAQGBaguByBbAtlRdghYcB6A0uj/U0cihI1jzXjgQBRVlBrg/78mN2QIrgO66lUtlRYCqWEYHThjCnZ3wzMTcruh4kQvnQguuo/XgUFg+v9iqkdo7Dx65y7iUqTNVqn1SaXQJWFktMxikbjNZlEvfxi83q9ParZcCXFhuBJUfBBl7cJZZUWVoFUdN0a5/ufxtPfTAUg2F1snqbMOcCaoOVKdA+BHt/zwxfTVJAcBr7gjKeQslHBCv/i02LD/ZXL+AY5h768idKQTGnEDzuquKYr0iG489O7+MIqqZqFHdYRM2OMc8e823o0B4eNMJkuKEP/Q199mbg408KMeyRrcxAlnUORX7wtn6kYkOwRZ2CtQWPvujX8jpg3SXa9tFwNBgKKb6i4eBEEpdu1fpSovny/UJLmLEqVyjAmpxwNh19dr/OnxEkgBZ3DmiMbJu678gujqztbS7pUtkKUtyBf6XYFsjafZB6ASrjxVYNJAuvJ1CRQ5gUJWmBoLbESNrPz4CsdO1pm6UpEn5xafMgXEaOG/fm//s1N1fgKEQYqkXuHsq4bfyEuIzsVmk/JVFApj/F27mzTEGRCKZcys6I2Ov93mEAKGEIaAr2OV1O77PAYUASHGygj4aIAQEqu7CLJLwfyRZspTxcMLj1iBpzbw1Eee0kQWUpMUw/7HrbTvxVdcAuRLXi/gF/9mcbO/87AfAwR8GAvzwmKxTCwPW4qtxjZi2+1Vqlqjdr2GTTrouLMuu+m+p1776Lu/2CwN0QRp4jRZmjL1y5YuYvWPTi+u77phSWTvvpDltc2d/aPcwyfPX7398Pnbzz8bW6Gx4MAH19OGNqw5g+Ozy5v7PuOVVx92F1fWt3YPju8/evri9buPX77/+lvWmVjXQ8816SAz9Bo2ad6qbYeoghM1b3yyV6lqjdr1GjbpoOPOuuym+5567aPv/norTafX417WUlckq/5Gm26x9XZzCyslynrXl4oq+zv8b2nKdQLOl/ptbIYm+8CfpKslcQzpFWFczQ7iFMD7b0AbIjGCILOukiVQBbn4Chy/uwPQnxzhb2s13xXeI6xrnqwKwissQi76WLeirIpDoj2fiucVM+wDhx77upVBoXB4vh46ueMiDXBVxaImen/O5/NDg5jHh542RQIGecz9dcucrDaHrahzxnNtifv5uPiEX8b6sdQENP9Osc0WGtVY2ZcbK7E0YRmsZn7EeDWRvJYf4nddutbv1evJK2nlCS0zYsOxbYgwoYwLqfSZq+r76QAhAllXEiljeO2IwARJpRxIZU2jttOBYgwoYwLqbRx3HYaQIQJZVxIpY3jttMBIkwo40IqbRy3nQEQYUIZF1Jp47jtTIAIE8q4kEobx21nAUSYUMaFVNo4bjsbIMKEMi6k0sZx2zkAET7yTH/5Rpb9jykTjcFksTmGcVA5ZNwZzyx/BYxeQrDJkzbJPwRdjxVdXIx+bh51UndkhGR9+yp8U9qtIqn+8RvEe3U+jQ1ezcfaETqkbkTXYdCYP1akXmggyTlCXhAiLxw5F8j1zsMhA4XIQA4nkBTyvEGKV9LXOdGj5HnPIE7Mi2TfCgyIFt8GPuePXFHMtaYFGwyirlINxsDADQTFIBqAGmHI6Bsxie5oPwEGr9KABIKErr+fyv0CPRqQWEQBe2FEGILqIGSn3dVzvdM4jpwohR409NZnJbX9pgvIDaUDEVLLW3WWEFI8lkgo7bz6m8erJAF3gP5XICWxOq+FpBZhSODlwPOe0UT82xmLmBbkXGZCDiL4OrnGaDv2dTMTNVV5S34MhMsJ2/K5kxz7EVLZYvBDZTX3SWQ8emL0G+piDL74rE7nYxFCUUhTHCcUAAQofGu1XJMvUf42RiximFiug3PS/7oMLx06yKLkMVth8fWuFuG6Kq0zgCSprWpfzxTE1Lnh0EPC7tbt8Ck6ES8tQJ3OfdyI9efQYwLilTrtj4zJgPkqrWQVu2KE6z0zkh77ouTUA8e9/2GG9cSYk2e4uQl7H+0BoZjW/mMNC96eFgrml6TaeWMBWL6ez0Ak9nRWNBUIXewCZ+XbYyhZD/hHoqkQBCmYDWU6eQ31XYdDaEowC5oOzYTOcJzD7GMXG1kKXeBsLnGei6zhMte5MuA2Nwbs4Q4PuJuH3OcU63nG4wHP2c923vIq3/GGd2zie37mhwG/88uAk/zBP/yZ9/zNQbbyhY8DvnKEb4J1eSHYMG219j1eQUuc6QHt1uRBEDAOmgR9Fsxw9pDhx5IpLn2VaeTyW9k5rq013dr1xa7/pfDfc9zMRbNz3S4Ndy4sFaHChdVW8GjQ43+rzX16dasyPFv2/P5OfejrqbvTdKHpRzOCZiJtNdpMOp3oKeh56KvQt6Dvw+jDmMAKxYrDyqAvAOyz2NexH2K/ZigIRtmMljOOYPIXTO8y28g8nvlpFu4sSJafWQewjmJTx/Y+u0ccnDhu40TnZMJ5BRcrrhS3B9xe8XDj2cNrF68y3hN87vC9z1+JvxZ/AwEFAmUF1QqxEnpAeI3Ie6KncMbFWolbI/6hhESJ2pLeSOmWMiptTMZSGetlRcmekcMHeU4K6hV0WsIPSzMt+2DZLyvGrbppTZV1UTbY2GRr86wtbbYM2Ba4/ZedXLuj9qzfO4N0hKJnULKpzAkq1KHyuOpWNS+gTgfqezUyoekSNN2B5gNamrS2ax3ULg4dozr/6LaCnkZ9atCfPOA2uMPQRRiRgNFlY1wTdjB5FNeF68eNoFZT66nN1HbUbhSJKkVVompRjahWVCeqFzWIGrXfEvY77/c98BUOseHwRzj82+F5RwThiDQcHXd8yYmfcKramdXOqTr/9Pz7i68ufrn08cqD/d9wrdINMzdv377zEfDsrjPyReHhE9xbgPtCSAbhAXQP9rxLVXgU7nG1p+Oe33hp6rWUN6Xe+fsgCh8vfdbzZdA3Ufh26Ueun0N+6/sT4G+J/8Z4oaYjzHDN/psDmHcx728hwKK/xaiQMkLaCOsOrS/86UjQHQl5IeHeiFyMmAgS90MSRZESR1KKSR9K5mCyPCSHIbmzyV1P7lEKtikeTNk2lZZwzYhzqbPSGEhLBGkPpjMS3SRGWCzZWEQsZnq56Y/G/oUMIzKqy/hQpnhmGzLbnfmnLMWQlWFW1lkrZVObnUX2t3P4jxxnkLNKznPFRQC5CiM3MvfhPPfmnZ6vTn7eBQiiwD0FDRTiW+hA4SIowrAoMRRdHGdfsT3F7SiBhhI7S3Yr2avUztLnS9aqcr6Xn1Xhy5ZxWnG71f6tPdt6RusH22DUxm9tDtgafvYPHb3Lczd6WZ27EWV1Tcsy7xeoZ+EzQoIwrJYPH+YJnlI/mbC97l2AufjsnvnX25uXj4/b1sj2ifNjAvj0xuVgCRynHifBmZS6OyTQajTTSQwxZfHsFmyx09gtkQ+kQT7HyT6S5Xby+JxcvFK/8EH0YsnwPm/aHfooGUFopsGwJjWZXV9CBpzzW0hf9CJE425MjehkKEgtlCG0xD83ccK9o1dRJRdQjImHRi/qcklo5ulFqW/DZvDWcUN8ZklP0GjkkM/PBEjRD9ck5FiKlJ64wpN9BtRpR8k2unhHHU4vOV+UU7fXGghaLMw/IfAF+qSvRLvhOEs6OTIDup7GA1k2fUKQnie7zoawIUmAZUvUxSGNo1BhR27+ZKWwpW2zfzeqiuQOy4MsImmcf0+qjcQ1lsWJScCk0MuI8B1hhSBRTB4NrS8ouC1xhLweGXZF1P6PVkoRtlyjj52zTZeQq1/tC6bMi5+ATy+5DD2AldDVp10Nqm1aKJxE/bUO4tWdztMsAoxU+S9XyF+7T7F1Oabrcoga83c2XlEvzY7kevWCCb3acqRxa3212gNidRfJpeur4IZ7G9m5DcuKCYwRF9PgDmFBKUhA3WRtsrY2ZczrICmgWCd1vdmPzLlgM02HhUoVvtZC5Gg3ddptjT/PrWM8Yw4pXJbTDZPCb6GuHHwphz9dmngfgdyrKDSpxgsd/O/UhC/0hBQbIMpn3NMPq68EBMnfdOjo9oIN9FR9A45IF3CLk6oMq+qexVyg8FjiuIQ1x4rLTnl9Ll7fLVF/xBzFn3t/0HsOE7NIb7z5iU9+zlqvgBQhAK6EKIT6hLzMMLhT/h2uIZY+V/a01GF8m7dw1FM0VGyh58tudrMltM7HJQsFwKXWvsHRDbiX7bqvzLgdNJhprulNJ+h1nbBflSnT8dAoyyWrMA3gIjHbAROgAoc8Y0+xbFl6NvXB7ILUGwzPFZd8bDv9OBJIiS8GwEBx7oR9e0+rtMxnfYjNIv6hGgjB5h0fLqneWaEvx1FNrzrslH6hkE5AbRyMfMT8J7zvolvPoOKKxvxngvSDCF20xG4u8wUmhC8iutiSBsOJVGJqWauz3sjy3+AIQbmncZ6r7U6vYTZxjMHoufxBRzqsozE++nVPsPTqOxONTQT+OI6fO61Hr89U/0PIBL0+3ms8BZ36nsXYKfEp4X87QMxHcXJ18gzy7XxzST+fQ0NAVz8vC4stkw4G+8hh+t4ldCrdGOjqGeQ5BX/tTVu7I0cr6klxZoePHMy6Prq25n6yftJe0jcr917Ki519cUPLVMLWZlK4Ne/Y8oB6yhTb4VT7MFYQaLff8CSRM8RINlUbuksyeGr8Y4uvslM1eBN1dhdbIavD/GiMNdFbj39srnMXeghPFxwO702sp+Fwz4TvoCWz43+J1ShcX/3j/AL2D7FHkwBxvfldmvoq7IszwF/0fYz66lSAX9os2FY9TOPw6OgPHb7KPR5zNcn+4Un/zNgY0SqHv7nRUc0JcR/tA6wMzou0X4xer99S/xeFA7G1TC0lHdkzoIZStDIbHxnhyOdm7RbiQefr/4T753z66Y5xqV7ZmzO0eSGlXmJosnLTcaIHPycB3pjgO5Q9FSTfJeR/RDt1DZTzcJlcZZa2DlZb/HeoeMoFL1cxV/ksJPloHHoh2qVjrMcsbKEg6326nX3ro5y+ylm/5umPN32MzUSQP+9lMMwfLqfXA/IRJ2AuiO1Rcg3JH60BaxXg8Bp5xbd1ugUEgKLVlFBFhaMgVbrTeyj6kuCwg+lzV/IDgFQFrKWB0D3WbzDAlDGfJ09SsXpnYKTPtx2ZVV91BqacjUyd13VpXUfs+8+BF+GH7uHk+AF+6F75v1ec3tnQ66lxV/9tD1gE+JijehIOrAjVcmfu+gn6se4f1KXOT7M1XDS7SqEyqYn2LQWSOxZUVAdrd32gAi7k30Ghc2r4DFQ98Jqx82+rOvJ7/2j/lIenK0Ibzgj6/ThmbXVrqSr017VY+B247i5ZqQP/cay1+Oi+8pGERuopnv5eAOQzFoqhLqA6RdIX/QjWOhWN8csD9Wb/OS3Wcg1cL9tf7s7UILdOj8g0eTf7JlJax9bVIcI+4Yy/A04uwgltuExeweR0jFN1npvNMp4K+Plf+QWe3CWHr7iq/tCwd1FfG+AJQ3ehH5j399jg0fvu3eUn+vRLTD/DG70EiCVC+kdwXuTDR2uu9/+NDZSw5eIl/oE0dQHJnQDg9cr4q4g+CDSNBlXffRsMIeYgPy4IaUMpgEMupcz3dog9bPxkWChcsoU0EZ0DQNUZguvF6T2zIQ89N/s6sq4dFqPHPlI6sfDhsCxs8yiuLyP9KUr8o8d85dV/uwbZGGiYubLA/tTt8Qrc+VzDBKDfVpE6XyS6GvMVrpvs6qhhVd1N/0ws+ZbQ87tIhS1vd3UNBRqNB3ZPP6ZqW7OHaDLDGbcqNOYTVX2YzJ2MDc2HL4GrvhXdxw/xz769xdy3bie13lkrfdyPz/Igo33DUxnxw/SWyQmDn3j0LTdIzPLNDDU2U5k+T9RobG/r4DnT+NX1AnKKkLPN9EzMqt+IiSJKxe/WFT+L+9SUoUH3KwqbXY+PBv+E+JoZIxZUsCI7i7c+bjN4xJRQkulDvd2f6/BGS0Zji7UGx3AEXUNl+7wimoraL1hCT+HtqVCGny1u9Pwhu5/nWXxM2I9c/0ShrprbLXTq0CCkOZ2hUd0z+99k/5ig6DPg+c/U35WKxKejj+FFEHR5g8avPxGUAcpcGe5Itf+uZsvb74weTjAYEvR1yvrvl85bGu1iUGh19Cy9RdEolW0979Vry1ZLTvm8F7+NKv63LGtu6w9TsRl649336F3zcT73GSo8VzTKPwnr+fY1+FQKUODZtSNcZWPgdvhUxtfA+vhnYq+tri3f6qm4Pn7aLxzzc38zB4SRT4f9swr8cmLhUcfGha+0wQjy2Rx056Ccj9RWpxtoWDc9Aj8jN95F0UppQLvaufKPqZJPXepKxpPPuehqZKqD7LG+BHC9+p6PfvYFqcKEmqgJ33kGgzNmRxuE9Gcq4ly1sGmkPd+Rmyn7x7RRPfXETcaYOaViRvRE8acY07HrOxk7xW3x208xlKOxpvSv8hvqu7w3sIjfLi89evmNb9InA/HrwheqHFEdaBHG/Ccwh77su77suLWBWTFejU/9sgSoxLhPMUqu/SEVwvh0D4bF0Yf7PP7nPE+7vH3TK4MYQBgBAAZehofCEKijJbDt/6RMjYGGPYQWr0L8bGQeUhtCiAjlnRUQnTMU1aEtcE5Zp9764cmLj76Ix4XDsIg4WoOKBGGPetVgiG7bNHFRtZY9Yu/9vtbbItCATdDxPmYs8BCcQAXOW5zBExPnd8H/g1We8xw6yJ0aH+63S7Nk/znRvsPv+XP9Dr736/fp3L42Bwiuz1LXzaMgAEAARNCXk8RZ+79CIHijAcC76qP/+TqpExnLkTXUAIQAe1cpYWI+A/A/g0CCdYZrASiJ/5l2hx8/eWTeIx5vOpFg6BuMQDUEzl3j4WPofYyhJcvvyHzn/QLArVf1ke9xJtGDbod7JmNe77XfFfVBw2DSZEjr0BMCdIcAgcr6IBAqGg6BSGUeBGKNnUKgREVfASkV/QQkRvoFSGse6EAgo2YQDIFs7FoBBHJWDn8G5M0fMYVAQd1UF6CclZFzQEDlRIkEqJkYk0AgnwSSQChJOCQQySfJJBArn+STQIlcslUgJZcUCSSaJbUCaRWTUwKQUSp5IADZUHr0vQDk9BnnBeR1ydqQQEGZ7DLSB+7IbhdnPjtkUBALp3fPHniNA5Wzf3ComBPDkco5FRxrnDPFJSrmOEzKdQlOjJzchdOa557gjJp5IZyNXafoOGflXBbOmz/3CRfULRMXUs7K/KYrIwQql7nRDxfLJJhQJAXGlDCpBJMBqzK+CMNVAZVCpVrApSJMWQhM4MpSK6hQRZErgWzY39oCPSJuoBLCkyvPRuQoJ8FJ8JxzVSpR4V/OgBGAC6QSrgBV4koUAO4Y/Nt7jo8riaRSMaGHTHYMz0U0An8D2sNtvsM9AkCNSwCeCqYo/T3o2JHIlPSK/ih+UEhwZQXBb6W+KWyxFHfHrAfoExtQdEmE66AE20kBYiUhxiSoQB95Sr8iq5d1lfr0fahE4Lj0NBn26ocQ2IAKWZh1/zVZ1S3FIabsVTyvmOHnjsX1C9g3F5voqm06thzwqqt44uJvI8BVFetTOjEe0x3ZJI4l5vGh90F1xXQzuNCyW55eJ1anRXcKb2mOXdMUVixM9nsRmGjY1M5Ww8TUSMN571LY1kzbNHcXO1LzLLXcqRadaIlN1d3EFEAz6vQnDPHUbUaVC8oJ9Dn1HLgY01rhBJ1j/l/Mgp4DWZUij1C29JMKJRDQur2c0jjKEgF5TmfTSxkFdq7DunJRGh4O531ilDeX+/v3JGV9h3p3NCV/X7imk5wCAoca+yyTAhPg7vtm2K/dPADBbrBswM6xrMuErf4tvoP/95BmsxzqPN2J0504Ne+puU935NS8pyY1jcg82iy5PEmxXp0jmhh4gpBliKLbjiqLzI/48fHOFyZrAX+/q8LeIs7wWPi/a4/swNe/UPeUxlGWCMjzYgqlDGpuHTwaDA+H8z4xypvL/f28q+3sXVJvAA==")
+          format("woff2");
+        font-display: block;
+        font-style: normal;
+        font-weight: 400;
+      }
+
+      [data-theme="dark"] {
+        --paper: #0d0d0d;
+        --paper-2: #303030;
+        --ink: #f1f1f1;
+        --ink-2: #303030;
+        --white: #111;
+        --muted: #f1f1f1;
+        --line: rgba(255, 255, 255, 0.18);
+        --widget-surface: var(--nothing-widget);
+        --widget-raised: var(--nothing-raised);
+        --widget-on: var(--nothing-on);
+
+        --terminal-bg: #000000;
+        --terminal-text: #f1f1f1;
+        --terminal-border: rgba(255, 255, 255, 0.1);
+        --terminal-comment: #777777;
+        --terminal-cmd: #ffffff;
+        --terminal-arg: #cccccc;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 86px;
+      }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "Space Grotesk", sans-serif;
+        overflow-x: hidden;
+        transition:
+          background-color var(--theme-speed) var(--theme-ease),
+          color var(--theme-speed) var(--theme-ease);
+      }
+
+      /* Exact background aura from mrvokintos.github.io */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: -9%;
+        z-index: -2;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            ellipse 42% 34% at 72% 28%,
+            rgba(43, 41, 44, 0.84) 0 12%,
+            rgba(77, 75, 76, 0.62) 29%,
+            transparent 68%
+          ),
+          radial-gradient(
+            ellipse 55% 31% at 20% 88%,
+            rgba(52, 52, 44, 0.78) 0 13%,
+            rgba(110, 106, 105, 0.52) 35%,
+            transparent 72%
+          ),
+          radial-gradient(
+            ellipse 38% 25% at 22% 4%,
+            rgba(119, 115, 116, 0.58) 0 16%,
+            transparent 70%
+          ),
+          radial-gradient(
+            ellipse 33% 25% at 94% 68%,
+            rgba(124, 124, 122, 0.48) 0 12%,
+            transparent 72%
+          ),
+          linear-gradient(
+            145deg,
+            #9c9c99 0%,
+            #989494 43%,
+            #8b8786 72%,
+            #777374 100%
+          );
+        filter: blur(30px) contrast(0.82);
+        transform: scale(1.07);
+      }
+
+      /* Exact background noise from mrvokintos.github.io */
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        opacity: 0.16;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E");
+      }
+
+      /* Top red sweep indicator on language change */
+      html::after {
+        content: "";
+        position: fixed;
+        z-index: 1000;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--accent);
+        transform: scaleX(0);
+        transform-origin: left;
+        pointer-events: none;
+        opacity: 0;
+      }
+
+      html.language-changing::after {
+        animation: language-sweep 0.54s cubic-bezier(0.2, 0, 0, 1);
+      }
+
+      @keyframes language-sweep {
+        0% {
+          opacity: 1;
+          transform: scaleX(0);
+          transform-origin: left;
+        }
+        49% {
+          opacity: 1;
+          transform: scaleX(1);
+          transform-origin: left;
+        }
+        50% {
+          opacity: 1;
+          transform: scaleX(1);
+          transform-origin: right;
+        }
+        100% {
+          opacity: 0;
+          transform: scaleX(0);
+          transform-origin: right;
+        }
+      }
+
+      /* Nothing press red ripple */
+      .nothing-press {
+        animation: nothing-press 0.72s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      }
+
+      @keyframes nothing-press {
+        0% {
+          box-shadow: 0 0 0 0 rgba(215, 25, 33, 0.7);
+        }
+        45% {
+          box-shadow: 0 0 0 10px rgba(215, 25, 33, 0.15);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(215, 25, 33, 0);
+        }
+      }
+
+      /* Scroll reveal motion matching mrvokintos.github.io */
+      .reveal {
+        opacity: 0;
+        transform: translateY(12px);
+        transition:
+          opacity 0.7s linear,
+          transform 0.9s var(--expressive),
+          background-color var(--theme-speed) var(--theme-ease),
+          color var(--theme-speed) var(--theme-ease),
+          border-color var(--theme-speed) var(--theme-ease);
+      }
+
+      .reveal.visible {
+        opacity: 1;
+        transform: none;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .reveal {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      /* Typography */
+      .dot {
+        font-family: "Nothing Font", monospace !important;
+        font-synthesis: none;
+        font-weight: 400;
+        letter-spacing: 0.025em;
+      }
+
+      .mono {
+        font-family: "Space Mono", monospace;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+        background: none;
+        color: inherit;
+      }
+
+      /* Monochrome pulsing status dot matching mrvokintos.github.io */
+      .brand-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--widget-on);
+        display: inline-block;
+        animation: pulse 2.4s ease-in-out infinite;
+        transition: background-color var(--theme-speed) var(--theme-ease);
+      }
+
+      .pulse-dot-sm {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--widget-on);
+        display: inline-block;
+        animation: pulse 2.4s ease-in-out infinite;
+        transition: background-color var(--theme-speed) var(--theme-ease);
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(0.85);
+          opacity: 0.55;
+        }
+      }
+
+      /* Topbar */
+      .topbar {
+        position: sticky;
+        z-index: 50;
+        top: 0;
+        background: var(--widget-surface);
+        color: var(--widget-on);
+        border-bottom: 1px solid transparent;
+        transition:
+          background-color var(--theme-speed) var(--theme-ease),
+          color var(--theme-speed) var(--theme-ease),
+          border-color var(--theme-speed) var(--theme-ease);
+      }
+
+      .topbar.scrolled {
+        border-color: var(--line);
+      }
+
+      .topbar-inner,
+      .shell {
+        width: min(1180px, calc(100% - 40px));
+        margin: auto;
+      }
+
+      .topbar-inner {
+        height: 76px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-right: auto;
+        font-size: 0.95rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      /* Nav buttons matching mrvokintos.github.io */
+      .nav {
+        display: flex;
+        gap: 4px;
+      }
+
+      .nav a {
+        min-height: 48px;
+        padding: 0 17px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        white-space: nowrap;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        transition:
+          transform 0.5s var(--expressive),
+          background-color var(--theme-speed) var(--theme-ease),
+          color var(--theme-speed) var(--theme-ease),
+          border-radius 0.5s var(--expressive);
+      }
+
+      .nav a:hover {
+        background: var(--widget-raised);
+        color: var(--widget-on);
+      }
+
+      .nav a:active {
+        transform: scale(0.95);
+        border-radius: 14px;
+        transition-duration: 0.12s;
+      }
+
+      /* Round Actions matching mrvokintos.github.io */
+      .round-action {
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: var(--widget-on);
+        color: var(--widget-surface);
+        cursor: pointer;
+        transition:
+          transform 0.55s var(--expressive),
+          border-radius 0.55s var(--expressive),
+          background-color var(--theme-speed) var(--theme-ease),
+          color var(--theme-speed) var(--theme-ease),
+          border-color var(--theme-speed) var(--theme-ease);
+      }
+
+      .round-action:hover {
+        transform: rotate(8deg) scale(1.04);
+        border-radius: 16px;
+      }
+
+      .round-action:active {
+        transform: scale(0.9);
+        transition-duration: 0.12s;
+      }
+
+      .theme-toggle {
+        background: transparent;
+        color: var(--widget-on);
+        border: 2px solid var(--widget-on);
+      }
+
+      .lang-toggle {
+        background: var(--widget-on);
+        color: var(--widget-surface);
+        border: 0;
+        font-family: "Space Mono", monospace;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+
+      /* Shell & Hero */
+      .shell {
+        padding: 28px 0 72px;
+      }
+
+      .black {
+        background: var(--widget-surface);
+        color: var(--widget-on);
+        transition:
+          background-color var(--theme-speed) var(--theme-ease),
+          color var(--theme-speed) var(--theme-ease);
+      }
+
+      .hero-section {
+        padding-bottom: 34px;
+      }
+
+      .hero-main {
+        position: relative;
+        overflow: hidden;
+        border-radius: 46px;
+        padding: clamp(28px, 4vw, 50px);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: clamp(28px, 4vw, 44px);
+      }
+
+      .hero-meta,
+      .hero-copy,
+      .hero-bottom {
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.13em;
+        color: var(--widget-on);
+        opacity: 0.85;
+        transition: color var(--theme-speed) var(--theme-ease);
+      }
+
+      .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+      }
+
+      .hero-copy {
+        position: relative;
+      }
+
+      .kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 20px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        transition: color var(--theme-speed) var(--theme-ease);
+      }
+
+      .kicker::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border: 2px solid currentColor;
+        border-radius: 50%;
+      }
+
+      h1.hero-title {
+        margin: 0 0 24px;
+        font-size: clamp(2.4rem, 6vw, 4.8rem);
+        line-height: 0.92;
+        letter-spacing: -0.03em;
+        font-weight: 400;
+        transition: color var(--theme-speed) var(--theme-ease);
+      }
+
+      p.hero-lead {
+        max-width: 760px;
+        margin: 0;
+        font-size: clamp(1rem, 2vw, 1.16rem);
+        line-height: 1.55;
+        opacity: 0.92;
+        transition: color var(--theme-speed) var(--theme-ease);
+      }
+
+      .hero-bottom {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      /* Exact Pill Links from mrvokintos.github.io */
+      .pill-link {
+        position: relative;
+        overflow: hidden;
+        min-height: 54px;
+        padding: 0 24px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: var(--light-raised);
+        color: var(--light-on);
+        font-weight: 700;
+        text-decoration: none;
+        transition:
+          transform 0.5s var(--expressive),
+          border-radius 0.5s var(--expressive),
+          background-color var(--theme-speed) var(--theme-ease),
+          color var(--theme-speed) var(--theme-ease),
+          border-color var(--theme-speed) var(--theme-ease);
+      }
+
+      .pill-link.dark {
+        background: var(--nothing-raised);
+        color: var(--nothing-on);
+        border: 2px solid #666;
+      }
+
+      .pill-link:hover {
+        transform: translateY(-2px);
+        border-radius: 18px;
+      }
+
+      .pill-link:active {
+        transform: scale(0.95);
+        transition-duration: 0.12s;
+      }
+
+      [data-theme="dark"] .pill-link.dark {
+        color: var(--nothing-on);
+      }
+
+      /* Section common styles */
+      .section {
+        padding: 34px 0;
+        scroll-margin-top: 80px;
+      }
+
+      .section-header {
+        margin-bottom: 22px;
+      }
+
+      .section-kicker {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        transition: color var(--theme-speed) var(--theme-ease);
+      }
+
+      h2.section-title {
+        margin: 6px 0 0;
+        font-size: clamp(2rem, 5vw, 3.4rem);
+        line-height: 0.96;
+        letter-spacing: 0;
+        font-weight: 400;
+        transition: color var(--theme-speed) var(--theme-ease);
+      }
+
+      .card-box {
+        position: relative;
+        overflow: hidden;
+        border-radius: 46px;
+        padding: clamp(26px, 4vw, 42px);
+      }
+
+      .section-header,
+      .selector-row,
+      .info-banner,
+      .terminal-frame {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* OpenWrt Watermark Emblem (Hero Only) */
+      .watermark-emblem {
+        --rotate-angle: 0deg; /* Угол поворота логотипа: например 0deg, 12deg, -15deg */
+        position: absolute;
+        right: clamp(16px, 5vw, 64px);
+        top: 50%;
+        transform: translateY(-50%) rotate(var(--rotate-angle));
+        transform-origin: center center;
+        width: clamp(190px, 28vw, 340px);
+        height: auto;
+        color: var(--widget-on);
+        opacity: 0.08; /* Прозрачность водяного знака (0.08 = 8%) */
+        pointer-events: none;
+        user-select: none;
+        z-index: 0;
+        transition:
+          transform 0.4s ease,
+          opacity var(--theme-speed) var(--theme-ease),
+          color var(--theme-speed) var(--theme-ease);
+      }
+
+      .watermark-emblem svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      @media (max-width: 768px) {
+        .watermark-emblem {
+          opacity: 0.04;
+          width: 170px;
+          right: -24px;
+        }
+      }
+
+      /* Segmented Selectors in Setup Studio */
+      .selector-row {
+        margin-bottom: 24px;
+      }
+
+      .selector-title {
+        display: block;
+        margin-bottom: 12px;
+        font-size: 0.76rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        transition: color var(--theme-speed) var(--theme-ease);
+      }
+
+      .chip-group {
+        display: grid;
+        gap: 10px;
+        width: 100%;
+      }
+
+      .chip-group.grid-channels {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .chip-group.grid-pkgmgr {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .chip-btn {
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        min-height: 48px;
+        padding: 12px 18px;
+        border-radius: 999px;
+        background: var(--widget-raised);
+        color: var(--widget-on);
+        border: none;
+        outline: none;
+        font-family: inherit;
+        font-size: 0.86rem;
+        font-weight: 700;
+        cursor: pointer;
+        text-align: center;
+        box-sizing: border-box;
+        transition:
+          transform 0.4s var(--expressive),
+          border-radius 0.4s var(--expressive),
+          background-color var(--theme-speed) var(--theme-ease),
+          color var(--theme-speed) var(--theme-ease),
+          filter 0.2s ease;
+      }
+
+      .chip-btn:hover {
+        transform: translateY(-2px);
+        border-radius: 20px;
+        background: var(--widget-raised);
+        filter: brightness(1.12);
+      }
+
+      .chip-btn:active {
+        transform: scale(0.98);
+      }
+
+      .chip-btn.active {
+        background: var(--widget-on);
+        color: var(--widget-surface);
+        filter: none;
+      }
+
+      .chip-badge {
+        font-size: 0.68rem;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: rgba(125, 125, 125, 0.25);
+        color: inherit;
+        white-space: nowrap;
+        transition: background-color var(--theme-speed) var(--theme-ease);
+      }
+
+      .chip-btn.active .chip-badge {
+        background: rgba(0, 0, 0, 0.16);
+      }
+
+      [data-theme="dark"] .chip-btn.active .chip-badge {
+        background: rgba(0, 0, 0, 0.22);
+      }
+
+      @media (max-width: 820px) {
+        .chip-group.grid-channels {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 600px) {
+        .chip-group.grid-channels {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 8px;
+        }
+        .chip-group.grid-pkgmgr {
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+        .chip-btn {
+          min-height: 46px;
+          padding: 11px 14px;
+          font-size: 0.82rem;
+          gap: 8px;
+        }
+      }
+
+      /* Info Banner */
+      .info-banner {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin: 22px 0;
+        padding: 16px 20px;
+        border-radius: 22px;
+        background: var(--widget-raised);
+        border: none;
+        color: var(--widget-on);
+        font-size: 0.88rem;
+        line-height: 1.5;
+        transition:
+          background-color var(--theme-speed) var(--theme-ease),
+          color var(--theme-speed) var(--theme-ease);
+      }
+
+      .info-banner .material-symbols-rounded {
+        color: var(--widget-on);
+        font-size: 22px;
+        margin-top: 2px;
+        transition: color var(--theme-speed) var(--theme-ease);
+      }
+
+      /* Command Terminal (Clean Black Container) */
+      .terminal-frame {
+        border-radius: 28px;
+        overflow: hidden;
+        background: var(--terminal-bg);
+        border: 1px solid var(--terminal-border);
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+      }
+
+      .terminal-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 18px;
+        background: #111111;
+        border-bottom: 1px solid var(--terminal-border);
+      }
+
+      .terminal-title-wrap {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 0.78rem;
+        color: #f1f1f1;
+      }
+
+      .terminal-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #f1f1f1;
+        opacity: 0.6;
+      }
+
+      .copy-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 999px;
+        border: none;
+        background: rgba(255, 255, 255, 0.14);
+        color: #f1f1f1;
+        font-family: "Space Mono", monospace;
+        font-size: 0.72rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s ease, transform 0.2s ease;
+      }
+
+      .copy-btn:hover {
+        background: #f1f1f1;
+        color: #000000;
+        transform: translateY(-1px);
+      }
+
+      .copy-btn.copied {
+        background: #f1f1f1;
+        color: #000000;
+      }
+
+      .code-view {
+        margin: 0;
+        padding: 22px;
+        overflow-x: auto;
+        font-family: "Space Mono", monospace;
+        font-size: 0.86rem;
+        line-height: 1.65;
+        color: var(--terminal-text);
+        background: var(--terminal-bg);
+      }
+
+      .code-view code {
+        white-space: pre;
+      }
+
+      .c-cmt {
+        color: var(--terminal-comment);
+      }
+
+      .c-cmd {
+        color: var(--terminal-cmd);
+        font-weight: 700;
+      }
+
+      .c-arg {
+        color: var(--terminal-arg);
+      }
+
+      /* Packages Panel */
+      .panel {
+        border-radius: 46px;
+        padding: clamp(24px, 4vw, 42px);
+      }
+
+      .panel.black {
+        background: var(--widget-surface);
+        color: var(--widget-on);
+        border: 1px solid var(--line);
+      }
+
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 22px;
+      }
+
+      .panel-head h2,
+      .panel-head h3 {
+        margin: 0;
+        font-size: 1.3rem;
+        white-space: nowrap;
+      }
+
+      .panel-head .material-symbols-rounded {
+        font-size: 30px;
+      }
+
+      /* Compact Specs (PC BUILD style from bio) */
+      .specs {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+
+      .spec {
+        min-height: 72px;
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: var(--widget-raised);
+        display: grid;
+        grid-template-columns: 32px 1fr;
+        align-items: center;
+        gap: 12px;
+        transition:
+          transform 0.55s var(--expressive),
+          border-radius 0.55s var(--expressive),
+          background-color var(--theme-speed) var(--theme-ease);
+      }
+
+      .spec:hover {
+        transform: translateY(-2px);
+        border-radius: 26px;
+        background: var(--widget-raised);
+      }
+
+      .spec .material-symbols-rounded {
+        font-size: 24px;
+      }
+
+      .spec .label {
+        display: block;
+        font-size: 0.72rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .spec .value {
+        font-weight: 700;
+        font-size: 0.92rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .arch-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: var(--line);
+        color: var(--widget-on);
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      @media (max-width: 820px) {
+        .specs {
+          grid-template-columns: 1fr;
+        }
+        .panel {
+          border-radius: 38px;
+          padding: 24px 20px;
+        }
+      }
+      /* Footer */
+      footer {
+        padding: 40px 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        font-size: 0.74rem;
+        opacity: 0.65;
+        border-top: 1px solid var(--line);
+        margin-top: 40px;
+        transition:
+          border-color var(--theme-speed) var(--theme-ease),
+          color var(--theme-speed) var(--theme-ease);
+      }
+
+      footer a:hover {
+        text-decoration: underline;
+      }
+
+      /* Exact Localization Typing Animation from mrvokintos.github.io */
+      .typing-word {
+        display: inline-block;
+        white-space: nowrap;
+      }
+
+      .typing-char {
+        display: inline-block;
+        opacity: 0;
+        animation: type-char 1ms step-end forwards;
+      }
+
+      .typing-block {
+        animation: type-block 0.28s steps(12, end) both;
+      }
+
+      @keyframes type-char {
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes type-block {
+        from {
+          clip-path: inset(0 100% 0 0);
+        }
+        to {
+          clip-path: inset(0 0 0 0);
+        }
+      }
+
+      @media (max-width: 960px) {
+        .packages-grid {
+          grid-template-columns: 1fr;
+        }
+        .keys-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 680px) {
+        .topbar-inner,
+        .shell {
+          width: calc(100% - 24px);
+        }
+        .nav {
+          display: none;
+        }
+        .hero-meta {
+          font-size: 0.65rem;
+          gap: 10px;
+        }
+        .hero-bottom {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .pill-link {
+          width: 100%;
+        }
+        .key-actions {
+          flex-direction: column;
+        }
+        .action-btn {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Topbar Navigation -->
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a href="#" class="brand">
+          <span class="brand-dot" aria-hidden="true"></span>
+          <span>OPENWRT REPO</span>
+        </a>
+
+        <nav class="nav" aria-label="Main Navigation">
+          <a href="#about" data-i18n="navAbout">О репозитории</a>
+          <a href="#setup" data-i18n="navSetup">Установка</a>
+          <a href="#packages" data-i18n="navPackages">Пакеты</a>
+        </nav>
+
+        <button
+          class="round-action theme-toggle"
+          id="theme-toggle"
+          type="button"
+          aria-label="Toggle theme"
+        >
+          <span class="material-symbols-rounded">dark_mode</span>
+        </button>
+
+        <button
+          class="round-action lang-toggle"
+          id="lang-toggle"
+          type="button"
+          aria-label="Switch language"
+        >
+          <span id="lang-label">EN</span>
+        </button>
+
+        <a
+          href="https://github.com/mrvokintos/openwrt-repo"
+          target="_blank"
+          rel="noreferrer"
+          class="round-action"
+          aria-label="GitHub Repository"
+        >
+          <span class="material-symbols-rounded">code</span>
+        </a>
       </div>
     </header>
 
-    <div class="card">
-      <h2>Quick Setup on Router</h2>
+    <main class="shell">
+      <!-- Hero Section -->
+      <section class="hero-section" id="about">
+        <div class="hero-main black reveal">
+          <div class="hero-meta mono">
+            <span class="status-indicator">
+              <span class="pulse-dot-sm" aria-hidden="true"></span>
+              <span data-i18n="metaActive">Онлайн фиды</span>
+            </span>
+            <span data-i18n="metaChannels">4 Канала (Stable / Beta / Git / Dev)</span>
+            <span>OPKG + APK</span>
+            <span data-i18n="metaArch">ARM64 Cortex-A53 + all</span>
+          </div>
 
-      <!-- Channel Selection -->
-      <div style="margin-bottom: 1.25rem;">
-        <span style="font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 0.4rem; font-weight: bold;">
-          Select Channel:
-        </span>
-        <div class="tabs" style="margin-bottom: 0.5rem;">
-          <button class="channel-btn active" onclick="setChannel('')">Stable (Official Release)</button>
-          <button class="channel-btn" onclick="setChannel('beta')">Beta (RC / Pre-release)</button>
-          <button class="channel-btn" onclick="setChannel('git')">Git (main branch artifacts)</button>
-          <button class="channel-btn" onclick="setChannel('dev')">Dev (dev branch artifacts)</button>
+          <div class="hero-copy">
+            <p class="kicker mono" data-i18n="kickerText">OpenWrt Package Repository</p>
+            <h1 class="hero-title dot">OPENWRT<br />PACKAGES</h1>
+            <p class="hero-lead" data-i18n="heroDesc">
+              Официальные и расширенные сборки ядра sing-box под ARM64 Cortex-A53 и веб-интерфейс luci-app-singbox-ui. Все пакеты и репозиторные индексы автоматически проверяются и подписываются цифровыми ключами для APK и OPKG.
+            </p>
+          </div>
+
+          <div class="hero-bottom">
+            <a href="#setup" class="pill-link" data-i18n="btnConfigure">
+              <span class="material-symbols-rounded">terminal</span>
+              <span>Настроить установку</span>
+            </a>
+            <a href="#packages" class="pill-link dark" data-i18n="btnBrowseFeeds">
+              <span class="material-symbols-rounded">inventory_2</span>
+              <span>Пакеты</span>
+            </a>
+            <a href="https://bio.mrvokintos.ru" target="_blank" class="pill-link dark" data-i18n="btnBio">
+              <span class="material-symbols-rounded">person</span>
+              <span>Автор</span>
+            </a>
+          </div>
+
+          <!-- OpenWrt Emblem Watermark -->
+          <div class="watermark-emblem" aria-hidden="true">
+            <svg viewBox="0 0 264.58 317.32" fill="currentColor">
+              <g transform="translate(-283.75,-175.10194)">
+                <g transform="matrix(7.1406724,0,0,-7.1406724,-2988.7002,1566.7533)">
+                  <path d="m 476.8096,171.6863 c -1.666,0 -3.016,-1.35 -3.016,-3.016 0,-1.665 1.35,-3.016 3.016,-3.016 1.666,0 3.016,1.351 3.016,3.016 C 479.8226,170.3353 478.4746,171.6833 476.8096,171.6863" />
+                  <path d="m 458.2832,187.1968 3.139,-3.139 c 3.939,3.939 9.386,6.37 15.387,6.37 6.002,0 11.449,-2.432 15.388,-6.37 l 3.139,3.139 c -4.74,4.74 -11.294,7.694 -18.527,7.694 -7.232,0 -13.787,-2.954 -18.526,-7.694" />
+                  <path d="m 463.9456,181.5344 3.139,-3.139 c 2.493,2.493 5.94,4.031 9.724,4.031 3.784,0 7.233,-1.538 9.726,-4.031 l 3.14,3.139 c -3.293,3.293 -7.848,5.356 -12.864,5.356 -5.017,0 -9.571,-2.062 -12.864,-5.356" />
+                  <path d="m 469.5774,175.9019 3.139,-3.139 c 2.262,2.257 5.924,2.257 8.186,0 l 3.139,3.139 c -1.917,1.918 -4.52,2.993 -7.232,2.985 -2.8,0 -5.356,-1.139 -7.232,-2.985" />
+                  <path d="m 487.95,176.7642 c 1.662,-2.277 2.647,-5.078 2.647,-8.094 0,-7.601 -6.186,-13.787 -13.787,-13.787 -7.602,0 -13.787,6.186 -13.787,13.787 0,3.016 0.984,5.817 2.646,8.094 l -3.17,3.17 c -2.462,-3.108 -3.908,-7.017 -3.908,-11.264 0,-10.032 8.186,-18.218 18.219,-18.218 10.032,0 18.218,8.186 18.218,18.218 0,4.247 -1.477,8.156 -3.908,11.264 z" />
+                </g>
+              </g>
+            </svg>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Package Manager Tabs -->
-      <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('opkg')">opkg (OpenWrt &le; 24.10)</button>
-        <button class="tab-btn" onclick="switchTab('apk')">apk (OpenWrt 25.12+)</button>
-      </div>
+      <!-- Section: Setup Studio -->
+      <section class="section" id="setup">
+        <div class="card-box black reveal">
+          <div class="section-header reveal">
+            <span class="section-kicker mono">[ 01 // QUICK START ]</span>
+            <h2 class="section-title dot" data-i18n="setupTitle">БЫСТРАЯ УСТАНОВКА НА РОУТЕР</h2>
+          </div>
 
-      <!-- OPKG TAB -->
-      <div id="tab-opkg" class="tab-content active">
-        <p style="margin-bottom: 0.5rem; color: var(--text-muted);">Add custom feed and signing key to your router:</p>
-        <div class="code-block">
-          <button class="copy-btn" onclick="copyCode('opkg-cmd')">Copy</button>
-          <pre id="opkg-cmd"></pre>
+          <!-- Step 1: Release Channel -->
+          <div class="selector-row">
+            <span class="selector-title mono" data-i18n="step1Label">1. Выберите канал релизов:</span>
+            <div class="chip-group grid-channels">
+              <button
+                class="chip-btn active"
+                type="button"
+                data-channel=""
+                onclick="selectChannel('')"
+              >
+                <span>Stable</span>
+                <span class="chip-badge mono" data-i18n="badgeStable">Релизы</span>
+              </button>
+              <button
+                class="chip-btn"
+                type="button"
+                data-channel="beta"
+                onclick="selectChannel('beta')"
+              >
+                <span>Beta</span>
+                <span class="chip-badge mono">RC / Beta</span>
+              </button>
+              <button
+                class="chip-btn"
+                type="button"
+                data-channel="git"
+                onclick="selectChannel('git')"
+              >
+                <span>Git</span>
+                <span class="chip-badge mono">main build</span>
+              </button>
+              <button
+                class="chip-btn"
+                type="button"
+                data-channel="dev"
+                onclick="selectChannel('dev')"
+              >
+                <span>Dev</span>
+                <span class="chip-badge mono">dev branch</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 2: OpenWrt Version / Package Manager -->
+          <div class="selector-row">
+            <span class="selector-title mono" data-i18n="step2Label">2. Версия OpenWrt и пакетный менеджер:</span>
+            <div class="chip-group grid-pkgmgr">
+              <button
+                class="chip-btn active"
+                id="chip-apk"
+                type="button"
+                onclick="selectPkgManager('apk')"
+              >
+                <span class="material-symbols-rounded" style="font-size: 18px;">inventory</span>
+                <span data-i18n="mgrApk">apk — OpenWrt 25.12+</span>
+              </button>
+              <button
+                class="chip-btn"
+                id="chip-opkg"
+                type="button"
+                onclick="selectPkgManager('opkg')"
+              >
+                <span class="material-symbols-rounded" style="font-size: 18px;">package_2</span>
+                <span data-i18n="mgrOpkg">opkg — OpenWrt ≤ 24.10</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Info Banner -->
+          <div class="info-banner" id="info-banner">
+            <span class="material-symbols-rounded">info</span>
+            <span id="info-text"></span>
+          </div>
+
+          <!-- Router Terminal Box (Commands Container) -->
+          <div class="terminal-frame">
+            <div class="terminal-bar">
+              <div class="terminal-title-wrap">
+                <span class="terminal-dot"></span>
+                <span class="mono" id="terminal-title">SSH-терминал роутера (root@OpenWrt:~#)</span>
+              </div>
+              <button
+                class="copy-btn"
+                id="btn-copy-terminal"
+                type="button"
+                onclick="copyTerminalCommands()"
+              >
+                <span class="material-symbols-rounded" style="font-size: 15px;">content_copy</span>
+                <span id="btn-copy-label">Скопировать команды</span>
+              </button>
+            </div>
+
+            <pre class="code-view"><code id="terminal-code"></code></pre>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <!-- APK TAB -->
-      <div id="tab-apk" class="tab-content">
-        <p style="margin-bottom: 0.75rem; color: var(--accent); font-size: 0.9rem;">
-          Note: APK (Alpine Package Keeper) was developed by Alpine Linux and is used in OpenWrt 25.12 and newer, replacing opkg. It is not related to Android APK.
-        </p>
-        <p style="margin-bottom: 0.5rem; color: var(--text-muted);">Trust repository signing key and install packages:</p>
-        <div class="code-block">
-          <button class="copy-btn" onclick="copyCode('apk-cmd')">Copy</button>
-          <pre id="apk-cmd"></pre>
+      <!-- Section: Repository Packages -->
+      <section class="section reveal" id="packages">
+        <article class="panel black">
+          <div class="panel-head">
+            <h3 class="mono" data-i18n="packagesTitle">СОСТАВ РЕПОЗИТОРИЯ</h3>
+            <span class="material-symbols-rounded">inventory_2</span>
+          </div>
+
+          <ul class="specs">
+            <li class="spec">
+              <span class="material-symbols-rounded">package_2</span>
+              <span>
+                <span class="label" data-i18n="specOfficialLabel">Официальное ядро</span>
+                <span class="value">sing-box <small class="arch-badge mono">aarch64</small></span>
+              </span>
+            </li>
+            <li class="spec">
+              <span class="material-symbols-rounded">rocket_launch</span>
+              <span>
+                <span class="label" data-i18n="specExtendedLabel">Расширенное ядро</span>
+                <span class="value">sing-box-extended <small class="arch-badge mono">aarch64</small></span>
+              </span>
+            </li>
+            <li class="spec">
+              <span class="material-symbols-rounded">web</span>
+              <span>
+                <span class="label" data-i18n="specUiLabel">Веб-интерфейс</span>
+                <span class="value">luci-app-singbox-ui <small class="arch-badge mono">all</small></span>
+              </span>
+            </li>
+          </ul>
+        </article>
+      </section>
+
+      <!-- Footer -->
+      <footer class="reveal">
+        <div class="mono">
+          <span>&copy; <span id="year"></span> MRVOKINTOS</span>
+          <span style="margin: 0 8px;">//</span>
+          <span>OPENWRT PACKAGE REPO</span>
         </div>
-      </div>
-    </div>
+        <div class="mono">
+          <a href="https://github.com/mrvokintos/openwrt-repo" target="_blank" data-i18n="footerSource">
+            ИСХОДНЫЙ КОД НА GITHUB
+          </a>
+        </div>
+      </footer>
+    </main>
 
-    <div class="card">
-      <h2>Repository Signing Keys</h2>
-      <p style="color: var(--text-muted); margin-bottom: 1rem;">All packages and repository indexes are cryptographically signed to guarantee authenticity and prevent tampering.</p>
-      <ul>
-        <li style="margin-bottom: 0.5rem;">
-          <strong>APK Public Key:</strong> <a href="keys/openwrt.rsa.pub">openwrt.rsa.pub</a> (for <code>/etc/apk/keys/</code>)
-        </li>
-        <li>
-          <strong>OPKG usign Public Key:</strong> <a href="keys/5bab0ffe1aafaf8f">5bab0ffe1aafaf8f</a> (for <code>/etc/opkg/keys/</code>)
-        </li>
-      </ul>
-    </div>
+    <script>
+      // Year
+      document.getElementById("year").textContent = new Date().getFullYear();
 
-    <div class="card">
-      <h2>Available Packages & Channels</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Package</th>
-            <th>Channel</th>
-            <th>Architecture</th>
-            <th>Indexes</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>sing-box</strong></td>
-            <td>Stable / All</td>
-            <td><code>aarch64_cortex-a53</code></td>
-            <td>
-              <a href="packages/aarch64_cortex-a53/Packages">Packages</a> |
-              <a href="packages/aarch64_cortex-a53/Packages.gz">Packages.gz</a> |
-              <a href="packages/aarch64_cortex-a53/APKINDEX.tar.gz">APKINDEX</a>
-            </td>
-          </tr>
-          <tr>
-            <td><strong>sing-box-extended</strong></td>
-            <td>Stable / All</td>
-            <td><code>aarch64_cortex-a53</code></td>
-            <td>
-              <a href="packages/aarch64_cortex-a53/Packages">Packages</a> |
-              <a href="packages/aarch64_cortex-a53/Packages.gz">Packages.gz</a> |
-              <a href="packages/aarch64_cortex-a53/APKINDEX.tar.gz">APKINDEX</a>
-            </td>
-          </tr>
-          <tr>
-            <td><strong>luci-app-singbox-ui</strong></td>
-            <td>Stable</td>
-            <td><code>all</code></td>
-            <td>
-              <a href="packages/all/Packages">Packages</a> |
-              <a href="packages/all/Packages.gz">Packages.gz</a> |
-              <a href="packages/all/APKINDEX.tar.gz">APKINDEX</a>
-            </td>
-          </tr>
-          <tr>
-            <td><strong>luci-app-singbox-ui</strong></td>
-            <td>Beta (RC)</td>
-            <td><code>all</code></td>
-            <td>
-              <a href="packages/beta/all/Packages">Packages</a> |
-              <a href="packages/beta/all/Packages.gz">Packages.gz</a> |
-              <a href="packages/beta/all/APKINDEX.tar.gz">APKINDEX</a>
-            </td>
-          </tr>
-          <tr>
-            <td><strong>luci-app-singbox-ui</strong></td>
-            <td>Git (main)</td>
-            <td><code>all</code></td>
-            <td>
-              <a href="packages/git/all/Packages">Packages</a> |
-              <a href="packages/git/all/Packages.gz">Packages.gz</a> |
-              <a href="packages/git/all/APKINDEX.tar.gz">APKINDEX</a>
-            </td>
-          </tr>
-          <tr>
-            <td><strong>luci-app-singbox-ui</strong></td>
-            <td>Dev (dev)</td>
-            <td><code>all</code></td>
-            <td>
-              <a href="packages/dev/all/Packages">Packages</a> |
-              <a href="packages/dev/all/Packages.gz">Packages.gz</a> |
-              <a href="packages/dev/all/APKINDEX.tar.gz">APKINDEX</a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="card">
-      <h2>Project Repositories</h2>
-      <ul>
-        <li style="margin-bottom: 0.5rem;">
-          <a href="https://github.com/mrvokintos/sing-box-clean" target="_blank">mrvokintos/sing-box-clean</a> — Automated builds of official sing-box and sing-box-extended for Cortex-A53 with NaiveProxy, Hysteria 2, and musl.
-        </li>
-        <li>
-          <a href="https://github.com/mrvokintos/luci-app-singbox-ui" target="_blank">mrvokintos/luci-app-singbox-ui</a> — Modern LuCI web interface for managing sing-box on OpenWrt routers.
-        </li>
-      </ul>
-    </div>
-
-    <footer>
-      <p>Automated with GitHub Actions. Maintained by <a href="https://github.com/mrvokintos" target="_blank">mrvokintos</a>.</p>
-    </footer>
-  </div>
-
-  <script>
-    let activeChannel = '';
-    let activeTab = 'opkg';
-
-    function updateCommands() {
-      const feedPath = activeChannel ? `${activeChannel}/aarch64_cortex-a53` : `aarch64_cortex-a53`;
-      const opkgText = `# 1. (Optional) Trust repository usign signing key
-wget -O /etc/opkg/keys/5bab0ffe1aafaf8f https://openwrt.mrvokintos.ru/keys/5bab0ffe1aafaf8f
-
-# 2. Add repository feed (ARM64 Cortex-A53)
-echo "src/gz mrvoki_repo https://openwrt.mrvokintos.ru/packages/${feedPath}" >> /etc/opkg/customfeeds.conf
-
-# 3. Update package lists
-opkg update
-
-# 4. Install sing-box and web interface
-opkg install luci-app-singbox-ui sing-box
-# OR for extended core:
-# opkg install luci-app-singbox-ui sing-box-extended`;
-
-      const apkText = `# 1. Trust repository RSA public key
-wget -O /etc/apk/keys/openwrt.rsa.pub https://openwrt.mrvokintos.ru/keys/openwrt.rsa.pub
-
-# 2. Add repository feed (ARM64 Cortex-A53)
-echo "https://openwrt.mrvokintos.ru/packages/${feedPath}" >> /etc/apk/repositories.d/mrvoki.list
-
-# 3. Update package index
-apk update
-
-# 4. Install packages (verified and trusted!)
-apk add luci-app-singbox-ui sing-box
-# OR for extended core:
-# apk add luci-app-singbox-ui sing-box-extended`;
-
-      document.getElementById('opkg-cmd').innerText = opkgText;
-      document.getElementById('apk-cmd').innerText = apkText;
-    }
-
-    function setChannel(channel) {
-      activeChannel = channel;
-      document.querySelectorAll('.channel-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${channel}'`));
+      // Topbar shadow on scroll
+      window.addEventListener("scroll", () => {
+        document.querySelector(".topbar").classList.toggle("scrolled", window.scrollY > 20);
       });
-      updateCommands();
-    }
 
-    function switchTab(tab) {
-      activeTab = tab;
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-      if (tab === 'opkg') {
-        document.querySelectorAll('.tab-btn')[0].classList.add('active');
-        document.getElementById('tab-opkg').classList.add('active');
+      // Reveal content on scroll (matching mrvokintos.github.io)
+      const reducedMotion = matchMedia("(prefers-reduced-motion:reduce)").matches;
+      const revealItems = document.querySelectorAll(".reveal");
+
+      if (reducedMotion || !("IntersectionObserver" in window)) {
+        revealItems.forEach((item) => item.classList.add("visible"));
       } else {
-        document.querySelectorAll('.tab-btn')[1].classList.add('active');
-        document.getElementById('tab-apk').classList.add('active');
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.08, rootMargin: "0px 0px -30px 0px" },
+        );
+        revealItems.forEach((item) => observer.observe(item));
       }
-    }
 
-    function copyCode(id) {
-      const text = document.getElementById(id).innerText;
-      navigator.clipboard.writeText(text).then(() => {
-        const btn = event.target;
-        const orig = btn.innerText;
-        btn.innerText = 'Copied!';
-        setTimeout(() => btn.innerText = orig, 1500);
+      // State
+      let currentLanguage = localStorage.getItem("language") || "ru";
+      let activeChannel = "";
+      let activePkgMgr = "apk";
+
+      // 100% Complete Localization
+      const copy = {
+        ru: {
+          navSetup: "Установка",
+          navAbout: "О репозитории",
+          navPackages: "Пакеты",
+          packagesTitle: "СОСТАВ РЕПОЗИТОРИЯ",
+          specOfficialLabel: "Официальное ядро",
+          specExtendedLabel: "Расширенное ядро",
+          specUiLabel: "Веб-интерфейс",
+          kickerText: "РЕПОЗИТОРИЙ ДЛЯ OPENWRT",
+          heroDesc: "Официальные и расширенные сборки ядра sing-box под ARM64 Cortex-A53 и веб-интерфейс luci-app-singbox-ui. Все пакеты и репозиторные индексы автоматически проверяются и подписываются цифровыми ключами для APK и OPKG.",
+          metaActive: "Онлайн фиды",
+          metaChannels: "4 Канала (Stable / Beta / Git / Dev)",
+          metaArch: "ARM64 Cortex-A53 + all",
+          btnConfigure: "Настроить установку",
+          btnBrowseFeeds: "Пакеты",
+          btnBio: "Автор",
+          setupTitle: "БЫСТРАЯ УСТАНОВКА НА РОУТЕР",
+          step1Label: "1. Выберите канал релизов:",
+          badgeStable: "Релизы",
+          step2Label: "2. Версия OpenWrt и пакетный менеджер:",
+          mgrOpkg: "opkg — OpenWrt ≤ 24.10",
+          mgrApk: "apk — OpenWrt 25.12+",
+          infoOpkg: "Для OPKG публичный ключ подписи импортируется в /etc/opkg/keys/5bab0ffe1aafaf8f, а репозиторий прописывается в /etc/opkg/customfeeds.conf.",
+          infoApk: "Для APK (OpenWrt 25.12+) публичный RSA-ключ импортируется в /etc/apk/keys/openwrt.rsa.pub, а репозиторий добавляется в /etc/apk/repositories.d/mrvoki.list.",
+          terminalTitle: "SSH-терминал роутера (root@OpenWrt:~#)",
+          btnCopyTerminal: "Скопировать команды",
+          copied: "Скопировано!",
+          footerSource: "ИСХОДНЫЙ КОД НА GITHUB",
+          lightTheme: "Включить светлую тему",
+          darkTheme: "Включить тёмную тему",
+          cmtKeyOpkg: "# 1. Доверие публичному ключу подписи (usign Ed25519)",
+          cmtFeedOpkg: "# 2. Добавление репозитория пакетов",
+          cmtUpdateOpkg: "# 3. Обновление списков пакетов",
+          cmtInstallOpkg: "# 4. Установка пакетов",
+          cmtKeyApk: "# 1. Доверие публичному RSA-ключу репозитория",
+          cmtFeedApk: "# 2. Добавление репозитория пакетов",
+          cmtUpdateApk: "# 3. Обновление индексов APK",
+          cmtInstallApk: "# 4. Установка пакетов (проверено цифровой подписью)"
+        },
+        en: {
+          navSetup: "Setup",
+          navAbout: "About",
+          navPackages: "Packages",
+          packagesTitle: "REPOSITORY PACKAGES",
+          specOfficialLabel: "Official Core",
+          specExtendedLabel: "Extended Core",
+          specUiLabel: "Web Interface",
+          kickerText: "OPENWRT PACKAGE REPOSITORY",
+          heroDesc: "Official and extended builds of sing-box core for ARM64 Cortex-A53 and modern luci-app-singbox-ui web interface. All feeds and packages are cryptographically signed with keys for APK and OPKG.",
+          metaActive: "Feeds Online",
+          metaChannels: "4 Channels (Stable / Beta / Git / Dev)",
+          metaArch: "ARM64 Cortex-A53 + all",
+          btnConfigure: "Configure Setup",
+          btnBrowseFeeds: "Packages",
+          btnBio: "Author",
+          setupTitle: "QUICK ROUTER SETUP",
+          step1Label: "1. Select release channel:",
+          badgeStable: "Releases",
+          step2Label: "2. OpenWrt version & package manager:",
+          mgrOpkg: "opkg — OpenWrt ≤ 24.10",
+          mgrApk: "apk — OpenWrt 25.12+",
+          infoOpkg: "For OPKG, the public usign key is imported to /etc/opkg/keys/5bab0ffe1aafaf8f, and the custom feed URL is appended to /etc/opkg/customfeeds.conf.",
+          infoApk: "For APK (OpenWrt 25.12+), the public RSA key is imported to /etc/apk/keys/openwrt.rsa.pub, and the repository is added to /etc/apk/repositories.d/mrvoki.list.",
+          terminalTitle: "Router SSH Terminal (root@OpenWrt:~#)",
+          btnCopyTerminal: "Copy Commands",
+          copied: "Copied!",
+          footerSource: "SOURCE CODE ON GITHUB",
+          lightTheme: "Switch to light theme",
+          darkTheme: "Switch to dark theme",
+          cmtKeyOpkg: "# 1. Trust repository public signing key (usign Ed25519)",
+          cmtFeedOpkg: "# 2. Add custom feed repository",
+          cmtUpdateOpkg: "# 3. Update package lists",
+          cmtInstallOpkg: "# 4. Install packages",
+          cmtKeyApk: "# 1. Trust repository RSA public key",
+          cmtFeedApk: "# 2. Add APK repository feed",
+          cmtUpdateApk: "# 3. Update APK repository index",
+          cmtInstallApk: "# 4. Install packages (verified and trusted)"
+        }
+      };
+
+      // Exact Nothing-Press ripple animation
+      function playNothingPress(button) {
+        button.classList.remove("nothing-press");
+        void button.offsetWidth;
+        button.classList.add("nothing-press");
+        setTimeout(() => button.classList.remove("nothing-press"), 750);
+      }
+
+      // Exact Theme handling from mrvokintos.github.io
+      const themeToggle = document.querySelector("#theme-toggle");
+      const themeIcon = themeToggle.firstElementChild;
+      const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+      function setTheme(theme) {
+        document.documentElement.dataset.theme = theme;
+        const dark = theme === "dark";
+        themeIcon.textContent = dark ? "light_mode" : "dark_mode";
+        themeToggle.setAttribute(
+          "aria-label",
+          copy[currentLanguage][dark ? "lightTheme" : "darkTheme"] || "Toggle theme",
+        );
+        themeMeta.content = dark ? "#0d0d0d" : "#e2e2e2";
+      }
+
+      const savedTheme = localStorage.getItem("theme");
+      setTheme(
+        savedTheme ||
+          (matchMedia("(prefers-color-scheme:dark)").matches
+            ? "dark"
+            : "light"),
+      );
+
+      themeToggle.addEventListener("click", () => {
+        playNothingPress(themeToggle);
+        const nextTheme =
+          document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        localStorage.setItem("theme", nextTheme);
+        setTheme(nextTheme);
       });
-    }
 
-    // Initialize commands on load
-    updateCommands();
-  </script>
-</body>
+      // Typing animation on language change exactly from mrvokintos.github.io
+      function typeLocalizedText() {
+        const animatedWords = [],
+          animatedBlocks = [];
+        document
+          .querySelectorAll(
+            "[data-i18n], h1, h2, .pkg-name, .selector-title, .nav a",
+          )
+          .forEach((element) => {
+            const rect = element.getBoundingClientRect();
+            if (
+              rect.bottom < -40 ||
+              rect.top > innerHeight + 40 ||
+              rect.right < 0 ||
+              rect.left > innerWidth
+            )
+              return;
+
+            if (element.matches("h1, h2, .nav a, .section-title")) {
+              element.classList.remove("typing-block");
+              void element.offsetWidth;
+              element.classList.add("typing-block");
+              animatedBlocks.push(element);
+              return;
+            }
+
+            const characterCount = Array.from(element.textContent).filter(
+                (character) => !/^\s$/.test(character),
+              ).length,
+              charDelay = Math.min(
+                28,
+                Math.max(2, 260 / Math.max(1, characterCount - 1)),
+              );
+            let charIndex = 0;
+            const walker = document.createTreeWalker(
+                element,
+                NodeFilter.SHOW_TEXT,
+              ),
+              nodes = [];
+            while (walker.nextNode()) nodes.push(walker.currentNode);
+            nodes.forEach((node) => {
+              const fragment = document.createDocumentFragment();
+              node.nodeValue.split(/(\s+)/).forEach((part) => {
+                if (!part) return;
+                if (/^\s+$/.test(part)) {
+                  fragment.append(part);
+                  return;
+                }
+                const word = document.createElement("span");
+                word.className = "typing-word";
+                animatedWords.push(word);
+                Array.from(part).forEach((character) => {
+                  const span = document.createElement("span");
+                  span.className = "typing-char";
+                  span.style.animationDelay = charIndex++ * charDelay + "ms";
+                  span.textContent = character;
+                  word.append(span);
+                });
+                fragment.append(word);
+              });
+              node.replaceWith(fragment);
+            });
+          });
+
+        setTimeout(() => {
+          animatedWords.forEach((word) => {
+            if (word.isConnected) word.replaceWith(word.textContent);
+          });
+          animatedBlocks.forEach((element) =>
+            element.classList.remove("typing-block"),
+          );
+        }, 520);
+      }
+
+      // Language Switcher
+      const languageButton = document.querySelector("#lang-toggle");
+      const languageLabel = document.querySelector("#lang-label");
+      let languageChanging = false;
+
+      function setLanguage(language) {
+        currentLanguage = language;
+        document.documentElement.lang = language;
+        localStorage.setItem("language", language);
+        languageLabel.textContent = language === "ru" ? "EN" : "RU";
+
+        document.querySelectorAll("[data-i18n]").forEach((element) => {
+          const key = element.dataset.i18n;
+          if (copy[language] && copy[language][key]) {
+            element.textContent = copy[language][key];
+          }
+        });
+
+        document.getElementById("terminal-title").textContent = copy[language].terminalTitle;
+        document.getElementById("btn-copy-label").textContent = copy[language].btnCopyTerminal;
+
+        updateInfoBanner();
+        renderTerminalCommands();
+        setTheme(document.documentElement.dataset.theme);
+      }
+
+      languageButton.addEventListener("click", () => {
+        if (languageChanging) return;
+        const nextLanguage = currentLanguage === "en" ? "ru" : "en";
+        playNothingPress(languageButton);
+        setLanguage(nextLanguage);
+
+        languageChanging = true;
+        typeLocalizedText();
+        document.documentElement.classList.remove("language-changing");
+        void document.documentElement.offsetWidth;
+        document.documentElement.classList.add("language-changing");
+        setTimeout(() => {
+          document.documentElement.classList.remove("language-changing");
+          languageChanging = false;
+        }, 540);
+      });
+
+      // Interactive Installation Controls
+      function selectChannel(channel) {
+        activeChannel = channel;
+        document.querySelectorAll("[data-channel]").forEach((btn) => {
+          btn.classList.toggle("active", btn.getAttribute("data-channel") === channel);
+        });
+        renderTerminalCommands();
+      }
+
+      function selectPkgManager(mgr) {
+        activePkgMgr = mgr;
+        document.getElementById("chip-apk").classList.toggle("active", mgr === "apk");
+        document.getElementById("chip-opkg").classList.toggle("active", mgr === "opkg");
+        updateInfoBanner();
+        renderTerminalCommands();
+      }
+
+      function updateInfoBanner() {
+        const textEl = document.getElementById("info-text");
+        textEl.textContent = activePkgMgr === "apk"
+          ? copy[currentLanguage].infoApk
+          : copy[currentLanguage].infoOpkg;
+      }
+
+      function renderTerminalCommands() {
+        let feedSub = "aarch64_cortex-a53";
+        if (activeChannel) {
+          feedSub = activeChannel + "/" + feedSub;
+        }
+        const feedUrl = "https://openwrt.mrvokintos.ru/packages/" + feedSub;
+
+        const t = copy[currentLanguage];
+        let code = "";
+
+        if (activePkgMgr === "apk") {
+          code = `<span class="c-cmt">${t.cmtKeyApk}</span>
+<span class="c-cmd">wget</span> <span class="c-arg">-O /etc/apk/keys/openwrt.rsa.pub https://openwrt.mrvokintos.ru/keys/openwrt.rsa.pub</span>
+
+<span class="c-cmt">${t.cmtFeedApk}</span>
+<span class="c-cmd">echo</span> <span class="c-arg">"${feedUrl}" &gt;&gt; /etc/apk/repositories.d/mrvoki.list</span>
+
+<span class="c-cmt">${t.cmtUpdateApk}</span>
+<span class="c-cmd">apk</span> <span class="c-arg">update</span>
+
+<span class="c-cmt">${t.cmtInstallApk}</span>
+<span class="c-cmd">apk</span> <span class="c-arg">add luci-app-singbox-ui sing-box</span>`;
+        } else {
+          code = `<span class="c-cmt">${t.cmtKeyOpkg}</span>
+<span class="c-cmd">wget</span> <span class="c-arg">-O /etc/opkg/keys/5bab0ffe1aafaf8f https://openwrt.mrvokintos.ru/keys/5bab0ffe1aafaf8f</span>
+
+<span class="c-cmt">${t.cmtFeedOpkg}</span>
+<span class="c-cmd">echo</span> <span class="c-arg">"src/gz mrvoki_repo ${feedUrl}" &gt;&gt; /etc/opkg/customfeeds.conf</span>
+
+<span class="c-cmt">${t.cmtUpdateOpkg}</span>
+<span class="c-cmd">opkg</span> <span class="c-arg">update</span>
+
+<span class="c-cmt">${t.cmtInstallOpkg}</span>
+<span class="c-cmd">opkg</span> <span class="c-arg">install luci-app-singbox-ui sing-box</span>`;
+        }
+
+        document.getElementById("terminal-code").innerHTML = code;
+      }
+
+      function copyTerminalCommands() {
+        const text = document.getElementById("terminal-code").innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          const btn = document.getElementById("btn-copy-terminal");
+          const lbl = document.getElementById("btn-copy-label");
+          const orig = lbl.textContent;
+          playNothingPress(btn);
+          btn.classList.add("copied");
+          lbl.textContent = copy[currentLanguage].copied;
+          setTimeout(() => {
+            btn.classList.remove("copied");
+            lbl.textContent = orig;
+          }, 1800);
+        });
+      }
+
+      function copyString(str, btn) {
+        navigator.clipboard.writeText(str).then(() => {
+          playNothingPress(btn);
+          const orig = btn.innerHTML;
+          btn.innerHTML = `<span class="material-symbols-rounded" style="font-size: 16px;">check</span> ${copy[currentLanguage].copied}`;
+          setTimeout(() => (btn.innerHTML = orig), 1800);
+        });
+      }
+
+      // Initialize language
+      setLanguage(currentLanguage);
+    </script>
+  </body>
 </html>
