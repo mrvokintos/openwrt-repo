@@ -61,7 +61,7 @@ opkg install luci-app-singbox-ui
 wget -O /etc/apk/keys/openwrt.rsa.pub https://openwrt.mrvokintos.ru/keys/openwrt.rsa.pub
 
 # 2. Add ARM64 Cortex-A53 repository
-echo "https://openwrt.mrvokintos.ru/packages/aarch64_cortex-a53" >> /etc/apk/repositories.d/mrvoki.list
+echo "https://openwrt.mrvokintos.ru/packages/aarch64_cortex-a53/APKINDEX.tar.gz" >> /etc/apk/repositories.d/mrvoki.list
 
 # 3. Update repository indexes
 apk update

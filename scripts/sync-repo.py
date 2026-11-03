@@ -263,7 +263,38 @@ def build_ipk_index(target_dir, usign_key=None):
         print("Notice: No usign secret key provided; skipping Packages.sig generation.")
 
 
+def canonicalize_apk_names(target_dir):
+    """Rename every .apk to <name>-<version>.apk taken from its metadata.
+
+    apk-tools downloads a package as <repo>/<name>-<version>.apk, so any other
+    file name makes it 404 even though the index lists the package.
+    """
+    script = (
+        'for f in *.apk; do '
+        'n=$(apk adbdump "$f" 2>/dev/null | sed -n "s/^  name: //p" | head -n 1); '
+        'v=$(apk adbdump "$f" 2>/dev/null | sed -n "s/^  version: //p" | head -n 1); '
+        'if [ -n "$n" ] && [ -n "$v" ] && [ "$f" != "$n-$v.apk" ]; then '
+        'echo "rename $f -> $n-$v.apk"; mv -f "$f" "$n-$v.apk"; fi; '
+        'done'
+    )
+    cmd = [
+        "docker", "run", "--rm",
+        "-v", f"{target_dir}:/work",
+        "-w", "/work",
+        "alpine:edge",
+        "sh", "-c", script,
+    ]
+    res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    if res.stdout.strip():
+        print(res.stdout.strip())
+    if res.returncode != 0:
+        print(f"Warning: apk rename failed: {res.stderr}", file=sys.stderr)
+
+
 def build_apk_index(target_dir, apk_key=None):
+    if not any(f.endswith(".apk") for f in os.listdir(target_dir)):
+        return
+    canonicalize_apk_names(target_dir)
     apk_files = [f for f in sorted(os.listdir(target_dir)) if f.endswith(".apk")]
     if not apk_files:
         return
@@ -371,6 +402,8 @@ def sync_channel(channel_name, dir_a53, dir_all, singbox_releases, tmp_dir):
 
     clean_matching_packages(dir_a53, "sing-box_")
     clean_matching_packages(dir_a53, "sing-box-extended_")
+    # APK names after canonicalize_apk_names: sing-box-<ver>.apk, sing-box-extended-<ver>.apk
+    clean_matching_packages(dir_a53, "sing-box-")
 
     for rel in (official_core_rel, extended_core_rel):
         if not rel:

@@ -1645,7 +1645,7 @@
 <span class="c-cmd">wget</span> <span class="c-arg">-O /etc/apk/keys/openwrt.rsa.pub https://openwrt.mrvokintos.ru/keys/openwrt.rsa.pub</span>
 
 <span class="c-cmt">${t.cmtFeedApk}</span>
-<span class="c-cmd">echo</span> <span class="c-arg">"${feedUrl}" &gt;&gt; /etc/apk/repositories.d/mrvoki.list</span>
+<span class="c-cmd">echo</span> <span class="c-arg">"${feedUrl}/APKINDEX.tar.gz" &gt;&gt; /etc/apk/repositories.d/mrvoki.list</span>
 
 <span class="c-cmt">${t.cmtUpdateApk}</span>
 <span class="c-cmd">apk</span> <span class="c-arg">update</span>
