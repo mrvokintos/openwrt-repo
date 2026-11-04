@@ -288,12 +288,15 @@ def canonicalize_apk_names(target_dir):
 
 
 def build_apk_index(target_dir, apk_key=None):
-    if not any(f.endswith(".apk") for f in os.listdir(target_dir)):
+    # The index is rebuilt even with no packages left (e.g. stable before the
+    # first release): a stale APKINDEX would point to deleted files (404).
+    has_apk = any(f.endswith(".apk") for f in os.listdir(target_dir))
+    has_index = os.path.exists(os.path.join(target_dir, "APKINDEX.tar.gz"))
+    if not has_apk and not has_index:
         return
-    canonicalize_apk_names(target_dir)
+    if has_apk:
+        canonicalize_apk_names(target_dir)
     apk_files = [f for f in sorted(os.listdir(target_dir)) if f.endswith(".apk")]
-    if not apk_files:
-        return
 
     out_file = os.path.join(target_dir, "APKINDEX.tar.gz")
     print(f"Building APK index for {target_dir} ({len(apk_files)} APKs)...")
