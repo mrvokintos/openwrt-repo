@@ -53,7 +53,12 @@ jobs:
             echo "No package or index changes to commit."
           else
             git commit -m "chore: sync upstream releases and update repository indexes"
-            git push origin HEAD:main
+            # main мог уйти вперёд за время синхронизации / main may have moved during the sync
+            for try in 1 2 3; do
+              git push origin HEAD:main && exit 0
+              git pull --rebase origin main
+            done
+            exit 1
           fi
 
       # Pages публикуется из ветки main (Settings → Pages: Deploy from a branch),
