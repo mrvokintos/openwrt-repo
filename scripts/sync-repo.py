@@ -145,11 +145,7 @@ def get_singbox_releases():
             if not official_beta:
                 official_beta = rel
 
-    if not official_stable and official_beta:
-        official_stable = official_beta
-    if not extended_stable and extended_beta:
-        extended_stable = extended_beta
-
+    # stable gets only real releases: no fallback to a pre-release.
     return {
         "official_stable": official_stable,
         "extended_stable": extended_stable,
@@ -173,8 +169,8 @@ def get_ui_release(want_prerelease=False):
         for r in releases:
             if not r.get("prerelease", False) and "rc" not in r.get("tag_name", "").lower() and "beta" not in r.get("tag_name", "").lower():
                 return r
-        # Fallback to latest available release if no official stable tag yet
-        return releases[0]
+        # No real release yet: stable stays without the panel (no pre-releases in stable)
+        return None
 
 
 def get_ui_artifact(branch):
@@ -474,6 +470,8 @@ def sync_channel(channel_name, dir_a53, dir_all, singbox_releases, tmp_dir):
         # Release channels: stable and beta
         is_beta = (channel_name == "beta")
         ui_rel = get_ui_release(want_prerelease=is_beta)
+        if not ui_rel:
+            print(f"No {'pre-release' if is_beta else 'release'} of luci-app-singbox-ui: channel {channel_name} has no panel")
         if ui_rel:
             tag = ui_rel["tag_name"]
             for asset in ui_rel.get("assets", []):
