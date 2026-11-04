@@ -12,8 +12,8 @@ Architecture: all
 Installed-Size: 174080
 Filename: luci-app-singbox-ui-dev-1d065b0-20261104-1241.ipk
 Size: 41722
-MD5Sum: a7a38783de43489e2c6b1d4095a4623c
-SHA256sum: 56d8a4dad58ee1922267aa5650e4d62f7e3fea1be3f2c2e4b3489b94770960d2
+MD5Sum: cd9ea07f0057f804f4bedbc574af8f9d
+SHA256sum: 77c167afaa78368d8ed789d2ae2dc2a0d7b9e725f69167ce97f17446ea58de34
 Description:  LuCI singbox-ui app
 
 Package: sing-box-extended
