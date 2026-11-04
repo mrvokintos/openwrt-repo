@@ -1,5 +1,5 @@
 Package: luci-app-singbox-ui
-Version: 3.0.0_rc1-dev.202611041149.0786385
+Version: 3.0.0_rc1-dev.202611041241.1d065b0
 Depends: libc, luci-base, ucode, ucode-mod-fs
 Source: feeds/base/feeds/luci/luci-app-singbox-ui
 SourceName: luci-app-singbox-ui
@@ -10,10 +10,10 @@ URL: https://github.com/openwrt/luci
 Maintainer: OpenWrt LuCI community
 Architecture: all
 Installed-Size: 174080
-Filename: luci-app-singbox-ui-dev-0786385-20261104-1149.ipk
-Size: 41641
-MD5Sum: 92ac9d795694a95a1dda339c258d6ddb
-SHA256sum: 332e5da36afdc4ccd8f1d2b0628a1f6fddd03e8b9dc447a4ff407ab0d8283f40
+Filename: luci-app-singbox-ui-dev-1d065b0-20261104-1241.ipk
+Size: 41722
+MD5Sum: a7a38783de43489e2c6b1d4095a4623c
+SHA256sum: 56d8a4dad58ee1922267aa5650e4d62f7e3fea1be3f2c2e4b3489b94770960d2
 Description:  LuCI singbox-ui app
 
 Package: sing-box-extended
