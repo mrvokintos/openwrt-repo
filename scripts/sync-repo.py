@@ -556,26 +556,6 @@ def sync_all():
             build_apk_index(d, apk_key)
             generate_sha256sums(d)
 
-        def ensure_symlink(src, link_path):
-            if os.path.islink(link_path) or os.path.exists(link_path):
-                try:
-                    os.remove(link_path)
-                except IsADirectoryError:
-                    pass
-            try:
-                os.symlink(src, link_path)
-                print(f"Symlink: {link_path} -> {src}")
-            except Exception as e:
-                print(f"Notice: symlink {link_path} -> {src}: {e}")
-
-        # Root convenience symlinks
-        ensure_symlink("packages/aarch64_cortex-a53", os.path.join(REPO_ROOT, "aarch64_cortex-a53"))
-        ensure_symlink("packages/all", os.path.join(REPO_ROOT, "all"))
-        ensure_symlink("packages/beta", os.path.join(REPO_ROOT, "beta"))
-        ensure_symlink("packages/git", os.path.join(REPO_ROOT, "git"))
-        ensure_symlink("packages/dev", os.path.join(REPO_ROOT, "dev"))
-        ensure_symlink("aarch64_cortex-a53", os.path.join(PACKAGES_DIR, "aarch64"))
-
         print("\nAll 4 channels (stable, beta, git, dev) synced, signed, and indexed successfully!")
 
     finally:

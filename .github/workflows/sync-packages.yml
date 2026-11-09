@@ -51,7 +51,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add packages/ aarch64_cortex-a53 all beta git dev keys/
+          git add packages/ keys/
           if git diff --staged --quiet; then
             echo "No package or index changes to commit."
           else
@@ -65,10 +65,12 @@ jobs:
           fi
 
       # Pages публикуется отсюда (Settings → Pages → Source: GitHub Actions).
-      # Автодеплой из ветки не укладывался в свои фиксированные 10 минут
-      # (артефакт ~700 МБ: симлинки каналов разворачиваются в копии).
-      # Pages is deployed from here (Source: GitHub Actions): the branch-based
-      # deploy kept hitting its fixed 10-minute timeout on a ~700 MB artifact.
+      # Деплою даётся максимум 10 минут (больше deploy-pages не разрешает),
+      # поэтому сайт держим маленьким: без симлинков, которые при упаковке
+      # артефакта разворачиваются в полные копии каналов.
+      # Pages is deployed from here (Source: GitHub Actions). deploy-pages caps
+      # the timeout at 10 minutes, so keep the site small: no symlinks, since
+      # they are dereferenced into full copies of the channels.
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v4
         with:
@@ -77,5 +79,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          timeout: 1800000 # 30 минут / 30 minutes
