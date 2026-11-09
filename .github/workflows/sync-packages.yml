@@ -25,6 +25,9 @@ jobs:
   sync-and-deploy:
     name: Sync Packages & Deploy Pages
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
@@ -55,13 +58,24 @@ jobs:
             git commit -m "chore: sync upstream releases and update repository indexes"
             # main мог уйти вперёд за время синхронизации / main may have moved during the sync
             for try in 1 2 3; do
-              git push origin HEAD:main && exit 0
+              if git push origin HEAD:main; then exit 0; fi
               git pull --rebase origin main
             done
             exit 1
           fi
 
-      # Pages публикуется из ветки main (Settings → Pages: Deploy from a branch),
-      # поэтому отдельный деплой через actions/deploy-pages не нужен и падал.
-      # Pages is served from the main branch, so a separate deploy-pages step is
-      # not needed (it failed with "Missing environment").
+      # Pages публикуется отсюда (Settings → Pages → Source: GitHub Actions).
+      # Автодеплой из ветки не укладывался в свои фиксированные 10 минут
+      # (артефакт ~700 МБ: симлинки каналов разворачиваются в копии).
+      # Pages is deployed from here (Source: GitHub Actions): the branch-based
+      # deploy kept hitting its fixed 10-minute timeout on a ~700 MB artifact.
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          timeout: 1800000 # 30 минут / 30 minutes
