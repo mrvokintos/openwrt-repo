@@ -102,7 +102,10 @@ def build_index(package_dir, output_dir=None):
     with open(packages_path, "w", encoding="utf-8") as f:
         f.write(packages_content)
 
-    with gzip.open(packages_gz_path, "wb", compresslevel=9) as f:
+    # mtime=0 and no file name in the gzip header: otherwise Packages.gz changes
+    # on every run even when the index itself is the same.
+    with open(packages_gz_path, "wb") as raw, \
+         gzip.GzipFile(filename="", fileobj=raw, mode="wb", compresslevel=9, mtime=0) as f:
         f.write(packages_content.encode("utf-8"))
 
     print(f"Successfully generated {packages_path} and {packages_gz_path} ({len(entries)} packages)")

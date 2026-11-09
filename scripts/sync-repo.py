@@ -6,6 +6,7 @@ organize them into package directories, sign packages and indexes with RSA (apk)
 and build repository indexes.
 """
 
+import gzip
 import hashlib
 import io
 import json
@@ -84,19 +85,31 @@ def extract_ipk_metadata(ipk_path):
     return meta, text
 
 
+def _open_gz_tar_writer(fileobj):
+    """tar.gz writer with a fixed gzip header (mtime=0, no file name).
+
+    tarfile's "w:gz" stores the current time in the gzip header, so the same
+    package got new bytes (and new checksums) on every sync run.
+    """
+    gz = gzip.GzipFile(filename="", fileobj=fileobj, mode="wb", compresslevel=9, mtime=0)
+    return gz, tarfile.open(fileobj=gz, mode="w", format=tarfile.GNU_FORMAT)
+
+
 def patch_ipk_version(ipk_path, new_ver):
     """
     Updates the Version: field inside control.tar.gz within an .ipk file.
+    The output is deterministic: the same input always gives the same bytes.
     """
     buf = io.BytesIO()
-    with tarfile.open(ipk_path, "r:*") as outer_in, tarfile.open(fileobj=buf, mode="w:gz") as outer_out:
+    outer_gz, outer_out = _open_gz_tar_writer(buf)
+    with tarfile.open(ipk_path, "r:*") as outer_in:
         for member in outer_in.getmembers():
             f = outer_in.extractfile(member)
             if member.name.endswith("control.tar.gz"):
                 c_in_bytes = f.read()
                 c_buf = io.BytesIO()
-                with tarfile.open(fileobj=io.BytesIO(c_in_bytes), mode="r:*") as c_in, \
-                     tarfile.open(fileobj=c_buf, mode="w:gz") as c_out:
+                c_gz, c_out = _open_gz_tar_writer(c_buf)
+                with tarfile.open(fileobj=io.BytesIO(c_in_bytes), mode="r:*") as c_in:
                     for cm in c_in.getmembers():
                         cf = c_in.extractfile(cm)
                         if cm.name.endswith("control") and not cm.name.endswith("conffiles"):
@@ -107,12 +120,15 @@ def patch_ipk_version(ipk_path, new_ver):
                             c_out.addfile(cm, io.BytesIO(new_bytes))
                         else:
                             c_out.addfile(cm, cf)
+                c_out.close()
+                c_gz.close()
                 c_buf.seek(0)
                 member.size = len(c_buf.getvalue())
                 outer_out.addfile(member, c_buf)
             else:
                 outer_out.addfile(member, f)
-    buf.seek(0)
+    outer_out.close()
+    outer_gz.close()
     with open(ipk_path, "wb") as out_f:
         out_f.write(buf.getvalue())
 
