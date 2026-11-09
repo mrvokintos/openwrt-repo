@@ -93,7 +93,9 @@ def build_index(package_dir, output_dir=None):
 
         entries.append("\n".join(new_lines) + "\n")
 
-    packages_content = "\n".join(entries) + ("\n" if entries else "")
+    # An empty feed still gets one newline: usign cannot sign a 0-byte file
+    # ("Cannot open message file"), which left a stale Packages.sig behind.
+    packages_content = "\n".join(entries) + "\n"
     os.makedirs(output_dir, exist_ok=True)
 
     packages_path = os.path.join(output_dir, "Packages")

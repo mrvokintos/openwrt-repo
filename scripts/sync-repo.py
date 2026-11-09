@@ -282,7 +282,7 @@ def canonicalize_apk_names(target_dir):
     file name makes it 404 even though the index lists the package.
     """
     script = (
-        'for f in *.apk; do '
+        'for f in *.apk; do [ -f "$f" ] || continue; '
         'n=$(apk adbdump "$f" 2>/dev/null | sed -n "s/^  name: //p" | head -n 1); '
         'v=$(apk adbdump "$f" 2>/dev/null | sed -n "s/^  version: //p" | head -n 1); '
         'if [ -n "$n" ] && [ -n "$v" ] && [ "$f" != "$n-$v.apk" ]; then '
@@ -304,6 +304,11 @@ def canonicalize_apk_names(target_dir):
 
 
 def build_apk_index(target_dir, apk_key=None):
+    # Stray file from an earlier bug: adbsign on an unmatched "*.apk" glob
+    # created it, and mkndx then failed on it on every run.
+    stray = os.path.join(target_dir, "*.apk")
+    if os.path.isfile(stray):
+        os.remove(stray)
     # The index is rebuilt even with no packages left (e.g. stable before the
     # first release): a stale APKINDEX would point to deleted files (404).
     has_apk = any(f.endswith(".apk") for f in os.listdir(target_dir))
@@ -322,6 +327,8 @@ def build_apk_index(target_dir, apk_key=None):
         key_dir = os.path.dirname(os.path.abspath(apk_key))
         key_name = os.path.basename(apk_key)
 
+        # Explicit file list, no shell glob: with no packages "*.apk" stays
+        # unexpanded and adbsign creates a 6-byte file with that name.
         sign_pkgs_cmd = [
             "docker", "run", "--rm",
             "-v", f"{target_dir}:/work",
@@ -329,13 +336,16 @@ def build_apk_index(target_dir, apk_key=None):
             "-w", "/work",
             "alpine:edge",
             "sh", "-c",
-            f"for f in *.apk; do apk adbsign --allow-untrusted --reset-signatures --sign-key /keys/{key_name} \"$f\"; done"
-        ]
-        res = subprocess.run(sign_pkgs_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        if res.returncode != 0:
-            print(f"Warning: apk adbsign failed: {res.stderr}", file=sys.stderr)
-        else:
-            print(f"Successfully signed {len(apk_files)} APK package(s).")
+            'for f in "$@"; do apk adbsign --allow-untrusted --reset-signatures '
+            f'--sign-key /keys/{key_name} "$f" || exit 1; done',
+            "sh",
+        ] + apk_files
+        if apk_files:
+            res = subprocess.run(sign_pkgs_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            if res.returncode != 0:
+                print(f"Warning: apk adbsign failed: {res.stderr}", file=sys.stderr)
+            else:
+                print(f"Successfully signed {len(apk_files)} APK package(s).")
 
         mkndx_cmd = [
             "docker", "run", "--rm",
