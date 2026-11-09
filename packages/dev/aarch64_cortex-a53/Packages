@@ -11,9 +11,9 @@ Maintainer: OpenWrt LuCI community
 Architecture: all
 Installed-Size: 184320
 Filename: luci-app-singbox-ui-dev-ed1c96c-20261104-1753.ipk
-Size: 43831
-MD5Sum: 05dd318ce64e461187e16c6a6708c3c5
-SHA256sum: 6725c8d23f8bd9634e87336abfc5ec33d4de69a27f4e9fbf6f4271a7533ce91d
+Size: 43822
+MD5Sum: 1c8f27993fcd3ac0fed438c0921de602
+SHA256sum: 380ad8edc8494aeead369e6742ddf2a6563a36008fec688422fb0a36fda00fe6
 Description:  LuCI singbox-ui app
 
 Package: sing-box-extended
